@@ -1,0 +1,29 @@
+package com.vigourhub.backend.service.impl;
+
+import com.vigourhub.backend.domain.account.Subscription;
+import com.vigourhub.backend.repository.SubscriptionRepository;
+import com.vigourhub.backend.service.SubscriptionService;
+import com.vigourhub.backend.service.mapper.SubscriptionMapper;
+import com.vigourhub.backend.web.controllers.accounts.dto.SubscriptionDto;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class SubscriptionServiceImpl implements SubscriptionService {
+
+    private SubscriptionRepository subscriptionRepository;
+    private SubscriptionMapper mapper;
+
+    @Autowired
+    public SubscriptionServiceImpl(SubscriptionRepository subscriptionRepository, SubscriptionMapper mapper) {
+        this.subscriptionRepository = subscriptionRepository;
+        this.mapper = mapper;
+    }
+
+    public List<SubscriptionDto> getAllSubscriptions(){
+        List<Subscription> subscriptions = subscriptionRepository.findAll();
+        return mapper.toDtos(subscriptions);
+    }
+}
