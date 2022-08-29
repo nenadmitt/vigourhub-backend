@@ -11,3 +11,34 @@ services:
       - POSTGRES_DB=${POSTGRES_DATABASE}
     volumes:
       - ~/postgres/data/postgres-data:/var/lib/postgresql/data
+  keycloak_postgres:
+    image: postgres
+    container_name: auth_server_db
+    environment:
+      - POSTGRES_USER=keycloak
+      - POSTGRES_PASSWORD=keycloak
+      - POSTGRES_DB=keycloak
+    volumes:
+      - ~/keycloak-postgres/data/postgres-data:/var/lib/postgresql/data
+    networks:
+      - local-keycloak
+  keycloak_auth:
+    image: jboss/keycloak
+    ports:
+      - "8080:8080"
+      - "9990:9990"
+    environment:
+      - DB_VENDOR=postgres
+      - DB_ADDR=keycloak_postgres
+      - DB_USER=keycloak
+      - DB_PASSWORD=keycloak
+      - DB_DATABASE=keycloak
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=password
+    depends_on:
+      - keycloak_postgres
+    networks:
+      - local-keycloak
+
+networks:
+  local-keycloak:

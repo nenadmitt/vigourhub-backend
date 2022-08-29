@@ -1,0 +1,21 @@
+server:
+  port: 8001
+spring:
+  jpa:
+    properties:
+      hibernate:
+        dll-auto: none
+        show-sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    datasource:
+        url: jdbc:postgresql://${POSTGRES_HOST}/${POSTGRES_DATABASE}
+        username: ${POSTGRES_USER}
+        password: ${POSTGRES_PASSWORD}
+    liquibase:
+      change-log: db/migrations/master-changelog.yaml
+keycloak:
+  url: "http://localhost:8080"
+  client: "admin-cli"
+  secret: "efprDEazl0SEQGUf4cnfKmi0bs9R8kEk"
+  token-endpoint: "/auth/realms/vigourhub/protocol/openid-connect/token"
+  users-endpoint: "/auth/admin/realms/vigourhub/users"
