@@ -1,5 +1,8 @@
 server:
   port: 8001
+security:
+  basic:
+    enabled: false
 spring:
   jpa:
     properties:
@@ -15,7 +18,8 @@ spring:
       change-log: db/migrations/master-changelog.yaml
 keycloak:
   url: "http://localhost:8080"
-  client: "admin-cli"
-  secret: "efprDEazl0SEQGUf4cnfKmi0bs9R8kEk"
-  token-endpoint: "/auth/realms/vigourhub/protocol/openid-connect/token"
+  client: "backend-api-service-account"
+  secret: "HpMBfrflTjP3If8pX7DefdTXXq0Qd0fK"
+  token-endpoint: "/auth/realms/master/protocol/openid-connect/token"
   users-endpoint: "/auth/admin/realms/vigourhub/users"
+  validation-endpoint: "/auth/realms/vigourhub/protocol/openid-connect/userinfo"

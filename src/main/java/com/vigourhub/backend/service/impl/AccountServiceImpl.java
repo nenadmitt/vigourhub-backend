@@ -3,6 +3,8 @@ package com.vigourhub.backend.service.impl;
 import com.vigourhub.backend.domain.account.Account;
 import com.vigourhub.backend.domain.account.Role;
 import com.vigourhub.backend.domain.account.User;
+import com.vigourhub.backend.infrastructure.security.keycloak.KeycloakContext;
+import com.vigourhub.backend.infrastructure.security.keycloak.dtos.KeycloakUser;
 import com.vigourhub.backend.repository.AccountRepository;
 import com.vigourhub.backend.repository.RoleRepository;
 import com.vigourhub.backend.repository.UserRepository;
@@ -11,9 +13,9 @@ import com.vigourhub.backend.web.controllers.accounts.dto.AccountRequestDto;
 import com.vigourhub.backend.web.controllers.accounts.dto.AccountResponseDto;
 import com.vigourhub.backend.web.controllers.accounts.dto.AdminUserRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ServerErrorException;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
@@ -31,14 +33,17 @@ public class AccountServiceImpl implements AccountService {
     private UserRepository userRepository;
     private RoleRepository roleRepository;
     private PasswordEncoder passwordEncoder;
+    private KeycloakContext keycloakContext;
 
     @Autowired
-    public AccountServiceImpl(AccountRepository accountRepository, UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+    public AccountServiceImpl(AccountRepository accountRepository, UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, KeycloakContext keycloakContext) {
         this.accountRepository = accountRepository;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
+        this.keycloakContext = keycloakContext;
     }
+
     @Override
     @Transactional
     public AccountResponseDto createAccount(AccountRequestDto request) {
@@ -53,21 +58,35 @@ public class AccountServiceImpl implements AccountService {
         accountRepository.save(account);
 
         AdminUserRequest userRequest = request.getUser();
-        User user = new User();
-        user.setId(UUID.randomUUID());
-        user.setUsername(userRequest.getUsername());
-        user.setFirstName(userRequest.getFirstName());
-        user.setLastName(userRequest.getLastName());
-        user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
-        user.setAccount(account);
 
-        Optional<Role> instructorRole = roleRepository.findByName(ROLE_INSTRUCTOR);
-        List<Role> roles = new ArrayList<>();
-        roles.add(instructorRole.get());
+        KeycloakUser keycloakUser = new KeycloakUser();
+        keycloakUser.setCredentials(userRequest.getPassword());
+        keycloakUser.setUsername(userRequest.getUsername());
+        keycloakUser.setFirstName(userRequest.getFirstName());
+        keycloakUser.setLastName(userRequest.getLastName());
 
-        user.setRoles(roles);
+        try {
+            this.keycloakContext.createKeycloakUser(keycloakUser);
 
-        userRepository.save(user);
+            User user = new User();
+            user.setId(UUID.randomUUID());
+            user.setUsername(userRequest.getUsername());
+            user.setFirstName(userRequest.getFirstName());
+            user.setLastName(userRequest.getLastName());
+            user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+            user.setAccount(account);
+
+            Optional<Role> instructorRole = roleRepository.findByName(ROLE_INSTRUCTOR);
+            List<Role> roles = new ArrayList<>();
+            roles.add(instructorRole.get());
+
+            user.setRoles(roles);
+
+            userRepository.save(user);
+        }catch (Exception ex) {
+            System.out.println(ex.getMessage() + "ERROR HERE!");
+            throw new ServerErrorException((ex.getMessage()));
+        }
 
         return null;
     }

@@ -19,4 +19,5 @@ public class KeycloakProperties {
     private String secret;
     private String tokenEndpoint;
     private String usersEndpoint;
+    private String validationEndpoint;
 }
