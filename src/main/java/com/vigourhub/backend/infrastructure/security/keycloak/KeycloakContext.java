@@ -36,12 +36,6 @@ public class KeycloakContext {
     }
     public void createKeycloakUser(KeycloakUser user) throws AuthenticationException {
 
-        try {
-
-        }catch(Exception e) {
-            Logger.getLogger("Keycloak Loggaer").info("Error creating keycloak context");
-            System.exit(0);
-        }
         var usersEndpoint = properties.getUrl() + properties.getUsersEndpoint();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -73,26 +67,5 @@ public class KeycloakContext {
             logger.info(String.format("Error creating keycloak context: %s",e.getMessage()));
             System.exit(-1);
         }
-    }
-
-    public KeycloakTokenValidation validateToken(String token) {
-        var validationUrl = properties.getUrl() + properties.getValidationEndpoint();
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(token);
-
-        HttpEntity<Void> request = new HttpEntity(headers);
-        var validation = new KeycloakTokenValidation();
-
-        try {
-            var response = this.http.postForEntity(validationUrl, request, KeycloakTokenValidation.class);
-            if (response.getBody() != null) {
-                validation.setValid(true);
-                validation.setUsername(response.getBody().getUsername());
-            }
-        }catch (HttpClientErrorException ex) {
-            validation.setValid(false);
-        }
-        return validation;
     }
 }

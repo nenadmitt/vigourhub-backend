@@ -1,6 +1,7 @@
 package com.vigourhub.backend.infrastructure.security;
 
 import com.vigourhub.backend.infrastructure.security.filters.JwtFilter;
+import io.swagger.models.HttpMethod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,10 +37,11 @@ public class SecurityConfiguration {
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.httpBasic().disable();
         http.formLogin().disable();
+        http.csrf().disable();
 
-        http.authorizeRequests()
-                .antMatchers("/api/v1/accounts/*").hasRole("Instructor").anyRequest().authenticated();
-//                .antMatchers("/api/v1/account").permitAll();
+        http.authorizeRequests().antMatchers("/api/v1/accounts","POST").permitAll()
+                .anyRequest().authenticated();
+//                .antMatchers("/api/v1/accounts/*").hasRole("Instructor").anyRequest().authenticated();
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

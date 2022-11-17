@@ -67,11 +67,12 @@ public class AccountServiceImpl implements AccountService {
 
         AdminUserRequest userRequest = request.getUser();
 
-        KeycloakUser keycloakUser = new KeycloakUser();
-        keycloakUser.setCredentials(userRequest.getPassword());
-        keycloakUser.setUsername(userRequest.getUsername());
-        keycloakUser.setFirstName(userRequest.getFirstName());
-        keycloakUser.setLastName(userRequest.getLastName());
+        KeycloakUser keycloakUser = new KeycloakUser(
+                userRequest.getFirstName(),
+                userRequest.getLastName(),
+                userRequest.getUsername(),
+                userRequest.getPassword()
+        );
 
         try {
             this.keycloakContext.createKeycloakUser(keycloakUser);

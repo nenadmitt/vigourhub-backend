@@ -3,17 +3,23 @@ package com.vigourhub.backend.infrastructure.security.keycloak;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.SignatureVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.vigourhub.backend.infrastructure.exceptions.ForbiddenException;
 import com.vigourhub.backend.infrastructure.properties.KeycloakProperties;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.codec.Base64;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.security.KeyFactory;
 import java.security.PublicKey;
-import java.security.cert.CertificateException;
+import java.security.SignatureException;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 import java.util.logging.Logger;
 
 @Component
@@ -32,30 +38,37 @@ public class KeycloakTokenVerifier {
 
     private void init() {
         try{
-            byte[] byteKey = Base64.decode(this.properties.getPubkey().getBytes());
-            X509EncodedKeySpec X509publicKey = new X509EncodedKeySpec(byteKey);
-            KeyFactory kf = KeyFactory.getInstance("RSA");
-            var pk = (RSAPublicKey) kf.generatePublic(X509publicKey);
-
+            var pk = (RSAPublicKey) generatePublicKeyFromString(this.properties.getPubkey());
             var algo = Algorithm.RSA256(pk);
             this.verifier = JWT.require(algo).build();
             logger.info("Setting up keycloak token verifier!");
         }
         catch(Exception e){
             logger.info("Error loading keycloak public key " + e.getMessage());
-//            System.exit(-1);
         }
     }
 
-    public boolean verifyToken(String token) {
+    private PublicKey generatePublicKeyFromString(String pk){
+        try {
+            var decoded = Base64.getDecoder().decode(pk);
+            KeyFactory factory = KeyFactory.getInstance("RSA");
+            X509EncodedKeySpec encodedKeySpec = new X509EncodedKeySpec( decoded);
+            return factory.generatePublic(encodedKeySpec);
+        }catch (Exception e) {
+            logger.info("Error while generating private key");
+        }
+        return null;
+    }
+
+    public String verifyToken(String token) throws JWTVerificationException {
 
         try {
-            this.verifier.verify(token);
-            return true;
-        }catch(Exception e) {
-            logger.info("InValid TOKEN");
-            e.printStackTrace();
-            return Boolean.FALSE;
+            DecodedJWT jwt = this.verifier.verify(token);
+            var claims = jwt.getClaims();
+            return claims.get("preferred_username").asString();
+        }catch(JWTVerificationException ex) {
+            logger.info("Error occurred while verifying the token integrity " + ex.getMessage());
+           throw new JWTVerificationException("Token is invalid");
         }
     }
 }

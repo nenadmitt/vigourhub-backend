@@ -1,5 +1,6 @@
 package com.vigourhub.backend.infrastructure.security.filters;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.vigourhub.backend.dto.users.UserDto;
 import com.vigourhub.backend.infrastructure.exceptions.ForbiddenException;
 import com.vigourhub.backend.infrastructure.exceptions.NotFoundException;
@@ -10,6 +11,7 @@ import com.vigourhub.backend.infrastructure.security.keycloak.KeycloakTokenVerif
 import com.vigourhub.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -21,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
@@ -29,6 +32,7 @@ public class JwtFilter extends OncePerRequestFilter {
     private final UserService userService;
 
     private final KeycloakTokenVerifier verifier;
+    private final Logger log = Logger.getLogger(this.getClass().getName());
     @Autowired
     public JwtFilter(KeycloakContext context, UserService userService, KeycloakTokenVerifier verifier) {
         this.context = context;
@@ -45,36 +49,34 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        System.out.println("filter hit!");
         var bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (bearerToken == null || !bearerToken.startsWith("Bearer ")) {
             response.sendError(403);
             return;
         }
-
         var token = bearerToken.substring(7);
-        var isValid = verifier.verifyToken(token);
-        System.out.println("Is token valid " + isValid);
-        var validation = context.validateToken(token);
 
-        if (!validation.isValid()) {
-            response.sendError(403);
+        var subject = "";
+        try {
+            subject = verifier.verifyToken(token);
+        }catch (JWTVerificationException ex) {
+            response.sendError(HttpStatus.FORBIDDEN.value(), ex.getMessage());
             return;
         }
+
         try {
-            UserDto userDto = userService.getByUsername(validation.getUsername());
+            UserDto userDto = userService.getByUsername(subject);
             SecurityUserDetails user = new SecurityUserDetails();
             user.setUserId(userDto.getId());
             user.setAccountId(userDto.getAccountId());
             user.setUsername(userDto.getUsername());
             user.setRoles(userDto.getRoles());
 
-            user.getRoles().stream().forEach(r -> System.out.println(r + " ROLE HERE"));
-
             SecurityAuthentication auth = new SecurityAuthentication(user);
             SecurityContextHolder.getContext().setAuthentication(auth);
             filterChain.doFilter(request, response);
         } catch (NotFoundException ex) {
+            log.info(String.format("User with username %s, not found", subject));
             response.sendError(403);
         }
 

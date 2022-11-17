@@ -25,7 +25,6 @@ public class AccountController {
 
     @PostMapping
     public ResponseEntity<AccountResponseDto> createAccount(@Valid @RequestBody AccountRequestDto request) throws ConflictException {
-        System.out.println("here");
         return ResponseEntity.ok(accountService.createAccount(request));
     }
 

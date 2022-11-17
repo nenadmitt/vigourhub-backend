@@ -1,5 +1,6 @@
 package com.vigourhub.backend.service.impl;
 
+import com.vigourhub.backend.domain.account.Role;
 import com.vigourhub.backend.dto.users.UserDto;
 import com.vigourhub.backend.infrastructure.exceptions.NotFoundException;
 import com.vigourhub.backend.repository.UserRepository;
@@ -35,7 +36,7 @@ public class UserServiceImpl implements UserService {
         dto.setLastName(user.getLastName());
         dto.setId(user.getId().toString());
         dto.setAccountId(user.getAccount().getId().toString());
-        dto.setRoles(user.getRoles().stream().map(role -> role.getName()).collect(Collectors.toList()));
+        dto.setRoles(user.getRoles().stream().map(Role::getName).collect(Collectors.toList()));
 
         return dto;
     }

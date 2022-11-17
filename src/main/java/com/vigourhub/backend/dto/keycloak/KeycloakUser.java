@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -26,13 +27,14 @@ public class KeycloakUser {
     @JsonProperty("enabled")
     private final boolean enabled = true;
 
-    public KeycloakUser(String firstName, String lastName, String username) {
+    public KeycloakUser(String firstName, String lastName, String username, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
+        setCredentials(password);
     }
 
-    public void setCredentials(String password){
+    private void setCredentials(String password){
         List<KeycloakCredentials> credentials = new ArrayList<>(1);
         credentials.add(new KeycloakCredentials(password));
         this._credentials = new KeycloakCredentials[1];
