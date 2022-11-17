@@ -4,7 +4,7 @@ import com.vigourhub.backend.domain.account.Subscription;
 import com.vigourhub.backend.repository.SubscriptionRepository;
 import com.vigourhub.backend.service.SubscriptionService;
 import com.vigourhub.backend.service.mapper.SubscriptionMapper;
-import com.vigourhub.backend.web.controllers.accounts.dto.SubscriptionDto;
+import com.vigourhub.backend.dto.accounts.SubscriptionDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

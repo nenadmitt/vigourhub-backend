@@ -1,10 +1,12 @@
 package com.vigourhub.backend.infrastructure.security.filters;
 
 import com.vigourhub.backend.dto.users.UserDto;
+import com.vigourhub.backend.infrastructure.exceptions.ForbiddenException;
 import com.vigourhub.backend.infrastructure.exceptions.NotFoundException;
 import com.vigourhub.backend.infrastructure.security.SecurityAuthentication;
 import com.vigourhub.backend.infrastructure.security.SecurityUserDetails;
 import com.vigourhub.backend.infrastructure.security.keycloak.KeycloakContext;
+import com.vigourhub.backend.infrastructure.security.keycloak.KeycloakTokenVerifier;
 import com.vigourhub.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -23,19 +25,20 @@ import java.util.List;
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
-    private KeycloakContext context;
-    private UserService userService;
+    private final KeycloakContext context;
+    private final UserService userService;
 
+    private final KeycloakTokenVerifier verifier;
     @Autowired
-    public JwtFilter(KeycloakContext context, UserService userService) {
+    public JwtFilter(KeycloakContext context, UserService userService, KeycloakTokenVerifier verifier) {
         this.context = context;
         this.userService = userService;
+        this.verifier = verifier;
     }
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         List<String> excludeUrlPatterns = Arrays.asList("/api/v1/accounts");
-        System.out.println(request.getRequestURI());
         return excludeUrlPatterns.contains(request.getRequestURI());
     }
 
@@ -45,10 +48,13 @@ public class JwtFilter extends OncePerRequestFilter {
         System.out.println("filter hit!");
         var bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (bearerToken == null || !bearerToken.startsWith("Bearer ")) {
-            throw new ServletException("Token not present");
+            response.sendError(403);
+            return;
         }
 
         var token = bearerToken.substring(7);
+        var isValid = verifier.verifyToken(token);
+        System.out.println("Is token valid " + isValid);
         var validation = context.validateToken(token);
 
         if (!validation.isValid()) {
@@ -62,6 +68,8 @@ public class JwtFilter extends OncePerRequestFilter {
             user.setAccountId(userDto.getAccountId());
             user.setUsername(userDto.getUsername());
             user.setRoles(userDto.getRoles());
+
+            user.getRoles().stream().forEach(r -> System.out.println(r + " ROLE HERE"));
 
             SecurityAuthentication auth = new SecurityAuthentication(user);
             SecurityContextHolder.getContext().setAuthentication(auth);

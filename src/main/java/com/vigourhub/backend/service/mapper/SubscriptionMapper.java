@@ -1,7 +1,7 @@
 package com.vigourhub.backend.service.mapper;
 
 import com.vigourhub.backend.domain.account.Subscription;
-import com.vigourhub.backend.web.controllers.accounts.dto.SubscriptionDto;
+import com.vigourhub.backend.dto.accounts.SubscriptionDto;
 import org.mapstruct.Mapper;
 
 import java.util.List;

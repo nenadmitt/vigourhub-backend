@@ -1,5 +1,6 @@
 package com.vigourhub.backend.infrastructure.exceptions;
 
+import io.swagger.annotations.Api;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,13 +26,20 @@ public class RestExceptionResolver extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ApiError> handleException(Exception e) {
-        ApiError error = new ApiError();
-        error.setStatus(HttpStatus.NOT_FOUND.value());
-        error.setMessage(e.getMessage());
-        error.setTimestamp(LocalDateTime.now());
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    public ResponseEntity<ApiError> handleException(NotFoundException ex) {
+        return new ResponseEntity<>(newApiError(ex.getMessage(), HttpStatus.NOT_FOUND.value()), HttpStatus.NOT_FOUND);
+    }
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ApiError> handleException(ForbiddenException ex) {
+        return new ResponseEntity<>(newApiError(ex.getMessage(), HttpStatus.FORBIDDEN.value()), HttpStatus.FORBIDDEN);
     }
 
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ApiError> handleException(ConflictException ex) {
+        return new ResponseEntity<>(newApiError(ex.getMessage(), HttpStatus.CONFLICT.value()), HttpStatus.CONFLICT);
+    }
 
+    private ApiError newApiError(String msg, int status) {
+        return new ApiError(msg, LocalDateTime.now(), status);
+    }
 }

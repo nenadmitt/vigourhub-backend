@@ -18,7 +18,7 @@ public class User extends AuditEntity{
     private String firstName;
     private String lastName;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),

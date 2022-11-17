@@ -4,7 +4,7 @@ import com.vigourhub.backend.infrastructure.security.SecurityAuthentication;
 import com.vigourhub.backend.infrastructure.security.SecurityUserDetails;
 import com.vigourhub.backend.service.SubscriptionService;
 import com.vigourhub.backend.web.WebConstants;
-import com.vigourhub.backend.web.controllers.accounts.dto.SubscriptionDto;
+import com.vigourhub.backend.dto.accounts.SubscriptionDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;

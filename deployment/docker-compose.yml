@@ -11,6 +11,15 @@ services:
       - POSTGRES_DB=${POSTGRES_DATABASE}
     volumes:
       - ~/postgres/data/postgres-data:/var/lib/postgresql/data
+  redis_cache:
+    image: redis
+    container_name: redis_cache
+    volumes:
+      - ~/redis/data/redis:/var/lib/redis/data
+    ports:
+      - "6379:6379"
+    command: >
+      --requirepass ${REDIS_PASSWORD}
   keycloak_postgres:
     image: postgres
     container_name: auth_server_db

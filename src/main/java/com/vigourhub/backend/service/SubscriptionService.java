@@ -1,6 +1,6 @@
 package com.vigourhub.backend.service;
 
-import com.vigourhub.backend.web.controllers.accounts.dto.SubscriptionDto;
+import com.vigourhub.backend.dto.accounts.SubscriptionDto;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.vigourhub.backend.web.controllers.accounts.dto;
+package com.vigourhub.backend.dto.accounts;
 
 import lombok.Builder;
 import lombok.Getter;

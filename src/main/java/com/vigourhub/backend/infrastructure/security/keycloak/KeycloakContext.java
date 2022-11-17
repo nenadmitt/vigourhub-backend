@@ -1,10 +1,12 @@
 package com.vigourhub.backend.infrastructure.security.keycloak;
 
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.vigourhub.backend.infrastructure.properties.KeycloakProperties;
-import com.vigourhub.backend.infrastructure.security.keycloak.dtos.KeycloakAuthRequest;
-import com.vigourhub.backend.infrastructure.security.keycloak.dtos.KeycloakAuthResponse;
-import com.vigourhub.backend.infrastructure.security.keycloak.dtos.KeycloakTokenValidation;
-import com.vigourhub.backend.infrastructure.security.keycloak.dtos.KeycloakUser;
+import com.vigourhub.backend.dto.keycloak.KeycloakAuthRequest;
+import com.vigourhub.backend.dto.keycloak.KeycloakAuthResponse;
+import com.vigourhub.backend.dto.keycloak.KeycloakTokenValidation;
+import com.vigourhub.backend.dto.keycloak.KeycloakUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
@@ -20,6 +22,7 @@ import java.util.logging.Logger;
 @Component
 public class KeycloakContext {
 
+    public final Logger logger = Logger.getLogger(this.getClass().getName());
     private RestTemplate http;
     private KeycloakProperties properties;
     private String accessToken;
@@ -33,6 +36,12 @@ public class KeycloakContext {
     }
     public void createKeycloakUser(KeycloakUser user) throws AuthenticationException {
 
+        try {
+
+        }catch(Exception e) {
+            Logger.getLogger("Keycloak Loggaer").info("Error creating keycloak context");
+            System.exit(0);
+        }
         var usersEndpoint = properties.getUrl() + properties.getUsersEndpoint();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -48,17 +57,22 @@ public class KeycloakContext {
     }
     private void initializeContext() {
 
-        var tokenEndpoint = properties.getUrl() + properties.getTokenEndpoint();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        try {
+            var tokenEndpoint = properties.getUrl() + properties.getTokenEndpoint();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        var auth = new KeycloakAuthRequest();
-        auth.setClientId(properties.getClient());
-        auth.setClientSecret(properties.getSecret());
+            var auth = new KeycloakAuthRequest();
+            auth.setClientId(properties.getClient());
+            auth.setClientSecret(properties.getSecret());
 
-        HttpEntity<MultiValueMap<String,String>> request = new HttpEntity<>(auth.toMap(), headers);
-        var response = this.http.postForEntity(tokenEndpoint, request, KeycloakAuthResponse.class);
-        this.accessToken = response.getBody().getToken();
+            HttpEntity<MultiValueMap<String,String>> request = new HttpEntity<>(auth.toMap(), headers);
+            var response = this.http.postForEntity(tokenEndpoint, request, KeycloakAuthResponse.class);
+            this.accessToken = response.getBody().getToken();
+        }catch(Exception e) {
+            logger.info(String.format("Error creating keycloak context: %s",e.getMessage()));
+            System.exit(-1);
+        }
     }
 
     public KeycloakTokenValidation validateToken(String token) {

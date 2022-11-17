@@ -1,9 +1,9 @@
 package com.vigourhub.backend.service;
 
-import com.vigourhub.backend.web.controllers.accounts.dto.AccountRequestDto;
-import com.vigourhub.backend.web.controllers.accounts.dto.AccountResponseDto;
-import org.springframework.stereotype.Service;
+import com.vigourhub.backend.infrastructure.exceptions.ConflictException;
+import com.vigourhub.backend.dto.accounts.AccountRequestDto;
+import com.vigourhub.backend.dto.accounts.AccountResponseDto;
 
 public interface AccountService {
-    AccountResponseDto createAccount(AccountRequestDto request);
+    AccountResponseDto createAccount(AccountRequestDto request) throws ConflictException;
 }

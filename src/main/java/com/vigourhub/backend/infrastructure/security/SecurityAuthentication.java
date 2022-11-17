@@ -49,4 +49,8 @@ public class SecurityAuthentication implements Authentication {
     public String getName() {
         return this.userDetails.getUsername();
     }
+
+    public SecurityUserDetails getUserDetails() {
+        return this.userDetails;
+    }
 }

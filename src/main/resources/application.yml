@@ -19,7 +19,8 @@ spring:
 keycloak:
   url: "http://localhost:8080"
   client: "backend-api-service-account"
-  secret: "HpMBfrflTjP3If8pX7DefdTXXq0Qd0fK"
-  token-endpoint: "/auth/realms/master/protocol/openid-connect/token"
+  secret: "WJsBiqvg8FgRdAq8atjPFhZstrtkNAGx"
+  token-endpoint: "/auth/realms/vigourhub/protocol/openid-connect/token"
   users-endpoint: "/auth/admin/realms/vigourhub/users"
   validation-endpoint: "/auth/realms/vigourhub/protocol/openid-connect/userinfo"
+  pubkey: "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwjLuL5o7lJOPJbNuOvyXaRRpouF58i9MJXFxSv+3baMe3U8Bw5uy+/qm+5myKlPqvVILVoUhwI6e4k7mzQzoopAgB60YDuP8eD8RryTVScW0sktnHNv1pdb8N/SiRF3fGO4puMkzC3NzREz8C0YUE0k8IgQTgAg33SZJvmBpAXLdZKuOBnw4/scqiVCxi0WbPFdmqqVcD8Dxv8aCuNSE4ZxziF94HQQGH9FPoPAlsiTq5aBMYjBCP6RdDXfAhm6Ct5VpAxxgX+0hoPG2/uLm62D3+7zETX5h0Vr1QTUptAF+nINplXLsCZWJo0+QFm3y3W1+EpPC2t1pTKKdamtLMwIDAQAB"

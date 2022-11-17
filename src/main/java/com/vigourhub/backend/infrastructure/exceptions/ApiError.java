@@ -12,4 +12,13 @@ public class ApiError {
     private String message;
     private LocalDateTime timestamp;
     private int status;
+
+    public ApiError(String message, LocalDateTime timestamp, int status) {
+        this.message = message;
+        this.timestamp = timestamp;
+        this.status = status;
+    }
+
+    public ApiError() {
+    }
 }

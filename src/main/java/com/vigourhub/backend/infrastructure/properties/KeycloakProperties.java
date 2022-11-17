@@ -3,7 +3,6 @@ package com.vigourhub.backend.infrastructure.properties;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -20,4 +19,5 @@ public class KeycloakProperties {
     private String tokenEndpoint;
     private String usersEndpoint;
     private String validationEndpoint;
+    private String pubkey;
 }

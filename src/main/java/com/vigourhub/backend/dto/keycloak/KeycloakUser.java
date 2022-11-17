@@ -1,4 +1,4 @@
-package com.vigourhub.backend.infrastructure.security.keycloak.dtos;
+package com.vigourhub.backend.dto.keycloak;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;

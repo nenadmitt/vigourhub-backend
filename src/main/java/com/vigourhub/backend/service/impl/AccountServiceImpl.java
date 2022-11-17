@@ -3,15 +3,16 @@ package com.vigourhub.backend.service.impl;
 import com.vigourhub.backend.domain.account.Account;
 import com.vigourhub.backend.domain.account.Role;
 import com.vigourhub.backend.domain.account.User;
+import com.vigourhub.backend.infrastructure.exceptions.ConflictException;
 import com.vigourhub.backend.infrastructure.security.keycloak.KeycloakContext;
-import com.vigourhub.backend.infrastructure.security.keycloak.dtos.KeycloakUser;
+import com.vigourhub.backend.dto.keycloak.KeycloakUser;
 import com.vigourhub.backend.repository.AccountRepository;
 import com.vigourhub.backend.repository.RoleRepository;
 import com.vigourhub.backend.repository.UserRepository;
 import com.vigourhub.backend.service.AccountService;
-import com.vigourhub.backend.web.controllers.accounts.dto.AccountRequestDto;
-import com.vigourhub.backend.web.controllers.accounts.dto.AccountResponseDto;
-import com.vigourhub.backend.web.controllers.accounts.dto.AdminUserRequest;
+import com.vigourhub.backend.dto.accounts.AccountRequestDto;
+import com.vigourhub.backend.dto.accounts.AccountResponseDto;
+import com.vigourhub.backend.dto.accounts.AdminUserRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -46,7 +47,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public AccountResponseDto createAccount(AccountRequestDto request) {
+    public AccountResponseDto createAccount(AccountRequestDto request) throws ConflictException {
 
         Account account = new Account();
         account.setId(UUID.randomUUID());
@@ -56,6 +57,13 @@ public class AccountServiceImpl implements AccountService {
         account.setCreatedAt(LocalDateTime.now());
 
         accountRepository.save(account);
+
+        var username = request.getUser().getUsername();
+
+        Optional<User> present = this.userRepository.findByUsername(username);
+        if (present.isPresent()) {
+            throw new ConflictException(String.format("User with username %s already exists", username));
+        }
 
         AdminUserRequest userRequest = request.getUser();
 
