@@ -1,0 +1,25 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 1
+      author: Nenad
+
+  - include:
+      file: sql/001_create_accounts_users_roles_subscriptions.sql
+      relativeToChangelogFile: true
+
+  - changeSet:
+      id: 2
+      author: Nenad
+
+  - include:
+      file: sql/002_remove_password_field.sql
+      relativeToChangelogFile: true
+
+  - changeSet:
+      id: 3
+      author: Nenad
+
+  - include:
+      file: sql/003_add_client_invitation_table.sql
+      relativeToChangelogFile: true

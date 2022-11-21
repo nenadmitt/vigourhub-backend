@@ -1,9 +1,0 @@
-databaseChangeLog:
-
-  - changeSet:
-      id: 1
-      author: Nenad
-
-  - include:
-      file: sql/001_create_accounts_users_roles_subscriptions.sql
-      relativeToChangelogFile: true
