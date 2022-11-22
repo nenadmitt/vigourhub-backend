@@ -7,9 +7,8 @@ public class SecurityUtils {
 
     public static SecurityUserDetails getCurrentPrincipal() {
         SecurityContext context = SecurityContextHolder.getContext();
-        SecurityUserDetails details = (SecurityUserDetails) context.getAuthentication().getDetails();
 
-        return details;
+        return (SecurityUserDetails) context.getAuthentication().getDetails();
      }
 
 }

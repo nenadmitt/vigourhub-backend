@@ -1,6 +1,6 @@
 package com.vigourhub.backend.service.mapper;
 
-import com.vigourhub.backend.domain.models.Subscription;
+import com.vigourhub.backend.domain.models.account.Subscription;
 import com.vigourhub.backend.dto.accounts.SubscriptionDto;
 import org.mapstruct.Mapper;
 

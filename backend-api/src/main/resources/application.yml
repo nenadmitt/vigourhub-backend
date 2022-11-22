@@ -11,7 +11,7 @@ spring:
         show-sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
   datasource:
-      url: jdbc:postgresql://${POSTGRES_HOST}/${POSTGRES_DATABASE}
+      url: jdbc:postgresql://${POSTGRES_HOST}/${POSTGRES_DATABASE}?stringtype=unspecified
       username: ${POSTGRES_USER}
       password: ${POSTGRES_PASSWORD}
   liquibase:

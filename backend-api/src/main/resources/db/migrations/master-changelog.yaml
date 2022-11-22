@@ -23,3 +23,11 @@ databaseChangeLog:
   - include:
       file: sql/003_add_client_invitation_table.sql
       relativeToChangelogFile: true
+
+  - changeSet:
+      id: 4
+      author: Nenad
+
+  - include:
+      file: sql/004_workouts_and_plans.sql
+      relativeToChangelogFile: true

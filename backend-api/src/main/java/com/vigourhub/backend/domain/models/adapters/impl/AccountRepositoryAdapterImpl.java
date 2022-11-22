@@ -1,9 +1,10 @@
-package com.vigourhub.backend.domain.adapters;
+package com.vigourhub.backend.domain.models.adapters.impl;
 
-import com.vigourhub.backend.domain.models.Account;
-import com.vigourhub.backend.domain.models.ClientInvitation;
-import com.vigourhub.backend.domain.models.Role;
-import com.vigourhub.backend.domain.models.User;
+import com.vigourhub.backend.domain.models.adapters.AccountRepositoryAdapter;
+import com.vigourhub.backend.domain.models.account.Account;
+import com.vigourhub.backend.domain.models.account.ClientInvitation;
+import com.vigourhub.backend.domain.models.account.Role;
+import com.vigourhub.backend.domain.models.account.User;
 import com.vigourhub.backend.domain.repository.AccountRepository;
 import com.vigourhub.backend.domain.repository.ClientInvitationRepository;
 import com.vigourhub.backend.domain.repository.RoleRepository;
@@ -56,5 +57,14 @@ public class AccountRepositoryAdapterImpl implements AccountRepositoryAdapter {
 
     public Optional<ClientInvitation> findInvitationById(String id) {
         return this.invitationRepository.findById(UUID.fromString(id));
+    }
+
+    public Optional<ClientInvitation> findInvitationByUsername(String username) {
+        return this.invitationRepository.findByUsername(username);
+    }
+
+    @Override
+    public void removeInvitation(UUID id) {
+        this.invitationRepository.deleteById(id);
     }
 }

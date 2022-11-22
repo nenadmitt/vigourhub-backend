@@ -21,29 +21,32 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
-
-    private final KeycloakContext context;
     private final UserService userService;
 
     private final KeycloakTokenVerifier verifier;
     private final Logger log = Logger.getLogger(this.getClass().getName());
+    private final Set<String> excluded = new HashSet<>();
+
     @Autowired
     public JwtFilter(KeycloakContext context, UserService userService, KeycloakTokenVerifier verifier) {
-        this.context = context;
         this.userService = userService;
         this.verifier = verifier;
+        excluded.add("/api/v1/accounts");
+        excluded.add("/api/v1/clients/register");
+
     }
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        List<String> excludeUrlPatterns = Arrays.asList("/api/v1/accounts");
-        return excludeUrlPatterns.contains(request.getRequestURI());
+        return this.excluded.contains(request.getRequestURI());
     }
 
     @Override

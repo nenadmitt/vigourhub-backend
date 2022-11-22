@@ -1,5 +1,6 @@
-package com.vigourhub.backend.domain.models;
+package com.vigourhub.backend.domain.models.account;
 
+import com.vigourhub.backend.domain.models.AuditEntity;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,7 +11,7 @@ import java.util.UUID;
 @Entity(name = "users")
 @Getter
 @Setter
-public class User extends AuditEntity{
+public class User extends AuditEntity {
     @Id
     private UUID id;
     private String username;

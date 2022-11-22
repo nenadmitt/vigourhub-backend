@@ -1,5 +1,6 @@
-package com.vigourhub.backend.domain.models;
+package com.vigourhub.backend.domain.models.account;
 
+import com.vigourhub.backend.domain.models.AuditEntity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

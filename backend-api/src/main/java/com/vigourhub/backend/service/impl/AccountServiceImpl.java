@@ -1,12 +1,12 @@
 package com.vigourhub.backend.service.impl;
 
-import com.vigourhub.backend.domain.adapters.AccountRepositoryAdapter;
-import com.vigourhub.backend.domain.models.Account;
-import com.vigourhub.backend.domain.models.ClientInvitation;
-import com.vigourhub.backend.domain.models.Role;
-import com.vigourhub.backend.domain.models.User;
-import com.vigourhub.backend.dto.accounts.ClientInvitationDto;
-import com.vigourhub.backend.dto.users.UserDto;
+import com.vigourhub.backend.domain.models.adapters.AccountRepositoryAdapter;
+import com.vigourhub.backend.domain.models.account.Account;
+import com.vigourhub.backend.domain.models.account.ClientInvitation;
+import com.vigourhub.backend.domain.models.account.Role;
+import com.vigourhub.backend.domain.models.account.User;
+import com.vigourhub.backend.dto.IdResponseDto;
+import com.vigourhub.backend.dto.accounts.*;
 import com.vigourhub.backend.infrastructure.exceptions.ConflictException;
 import com.vigourhub.backend.infrastructure.exceptions.InternalServerError;
 import com.vigourhub.backend.infrastructure.exceptions.NotFoundException;
@@ -14,15 +14,13 @@ import com.vigourhub.backend.infrastructure.security.SecurityUtils;
 import com.vigourhub.backend.infrastructure.security.keycloak.KeycloakContext;
 import com.vigourhub.backend.dto.keycloak.KeycloakUser;
 import com.vigourhub.backend.service.AccountService;
-import com.vigourhub.backend.dto.accounts.AccountRequestDto;
-import com.vigourhub.backend.dto.accounts.AccountResponseDto;
-import com.vigourhub.backend.dto.accounts.AdminUserRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.logging.Logger;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -31,6 +29,7 @@ public class AccountServiceImpl implements AccountService {
     private final String ROLE_CLIENT = "Client";
     private final AccountRepositoryAdapter accountAdapter;
     private KeycloakContext keycloakContext;
+    private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     @Autowired
     public AccountServiceImpl( AccountRepositoryAdapter accountAdapter, KeycloakContext keycloakContext) {
@@ -99,22 +98,34 @@ public class AccountServiceImpl implements AccountService {
             throw new ConflictException(String.format("User with username %s, already present", username));
         }
 
+        Optional<ClientInvitation> invitation = this.accountAdapter.findInvitationByUsername(username);
+
+        if (invitation.isPresent()) {
+            var _invitation = invitation.get();
+            ClientInvitationDto dto = new ClientInvitationDto();
+            dto.setToken(_invitation.getId().toString());
+
+            return dto;
+        }
+
         var principal = SecurityUtils.getCurrentPrincipal();
 
-        ClientInvitation invitation = new ClientInvitation();
-        invitation.setAccountId(UUID.fromString(principal.getAccountId()));
-        invitation.setUsername(username);
-        invitation.setId(UUID.randomUUID());
+        ClientInvitation _invitation = new ClientInvitation();
+        _invitation.setAccountId(UUID.fromString(principal.getAccountId()));
+        _invitation.setUsername(username);
+        _invitation.setId(UUID.randomUUID());
 
-        accountAdapter.insert(invitation);
+        accountAdapter.insert(_invitation);
 
         ClientInvitationDto dto = new ClientInvitationDto();
-        dto.setToken(invitation.getId().toString());
+        dto.setToken(_invitation.getId().toString());
 
         return dto;
     }
 
-    public String registerInvitedClient(String token, UserDto userDto) throws Exception {
+    @Override
+    @Transactional
+    public IdResponseDto registerInvitedClient(String token, ClientRegistrationRequestDto userDto) throws Exception {
 
         Optional<ClientInvitation> invitation = this.accountAdapter.findInvitationById(token);
 
@@ -123,11 +134,26 @@ public class AccountServiceImpl implements AccountService {
         }
 
         var _invitation = invitation.get();
+
         User client = new User();
         client.setUsername(_invitation.getUsername());
         client.setId(UUID.randomUUID());
         client.setFirstName(userDto.getFirstName());
         client.setLastName(userDto.getLastName());
+
+        KeycloakUser keycloakUser = new KeycloakUser(
+                userDto.getFirstName(),
+                userDto.getLastName(),
+                _invitation.getUsername(),
+                userDto.getPassword()
+        );
+
+        try {
+            keycloakContext.createKeycloakUser(keycloakUser);
+        }catch (Exception ex) {
+            logger.info(ex.getMessage());
+            throw new InternalServerError(ex.getMessage());
+        }
 
         var account = new Account();
         account.setId(_invitation.getAccountId());
@@ -138,11 +164,14 @@ public class AccountServiceImpl implements AccountService {
         if (clientRole.isEmpty()) {
             throw new InternalServerError("Client role not found in a database");
         }
-        List<Role> roles = Arrays.asList(clientRole.get());
+        List<Role> roles = List.of(clientRole.get());
         client.setRoles(roles);
 
         accountAdapter.insert(client);
+        var userId = client.getId().toString();
 
-        return client.getId().toString();
+        this.accountAdapter.removeInvitation(_invitation.getId());
+
+        return new IdResponseDto(userId);
     }
 }

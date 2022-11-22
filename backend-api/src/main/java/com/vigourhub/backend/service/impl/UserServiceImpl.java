@@ -1,8 +1,8 @@
 package com.vigourhub.backend.service.impl;
 
-import com.vigourhub.backend.domain.adapters.AccountRepositoryAdapter;
-import com.vigourhub.backend.domain.models.Role;
-import com.vigourhub.backend.domain.models.User;
+import com.vigourhub.backend.domain.models.adapters.AccountRepositoryAdapter;
+import com.vigourhub.backend.domain.models.account.Role;
+import com.vigourhub.backend.domain.models.account.User;
 import com.vigourhub.backend.dto.users.UserDto;
 import com.vigourhub.backend.infrastructure.exceptions.NotFoundException;
 import com.vigourhub.backend.service.UserService;

@@ -1,4 +1,4 @@
-package com.vigourhub.backend.domain.models;
+package com.vigourhub.backend.domain.models.account;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,14 +7,11 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.util.UUID;
 
+@Entity(name = "roles")
 @Getter
 @Setter
-@Entity(name = "subscriptions")
-public class Subscription {
-
+public class Role {
     @Id
     private UUID id;
     private String name;
-    private Float price;
-    private Integer maxUsers;
 }
