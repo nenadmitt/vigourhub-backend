@@ -1,4 +1,4 @@
-package com.vigourhub.backend.domain.models.adapters;
+package com.vigourhub.backend.domain.adapters;
 
 import com.vigourhub.backend.domain.models.account.Account;
 import com.vigourhub.backend.domain.models.account.ClientInvitation;

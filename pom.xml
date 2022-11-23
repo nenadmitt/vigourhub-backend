@@ -6,10 +6,17 @@
     <groupId>com.vigourhub</groupId>
     <artifactId>vigourhub</artifactId>
     <version>0.1.0</version>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot</artifactId>
+        </dependency>
+    </dependencies>
     <packaging>pom</packaging>
 
     <modules>
         <module>backend-api</module>
+        <module>notification-service</module>
     </modules>
 
     <parent>

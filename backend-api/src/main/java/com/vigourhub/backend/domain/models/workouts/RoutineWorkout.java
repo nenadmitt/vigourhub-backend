@@ -30,4 +30,6 @@ public class RoutineWorkout extends AuditEntity {
     @Column(columnDefinition = "jsonb")
     private WorkoutMetadata metadata;
 
+    private String executionType;
+
 }

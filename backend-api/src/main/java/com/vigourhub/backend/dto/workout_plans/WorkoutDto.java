@@ -19,6 +19,7 @@ public class WorkoutDto {
         response.setId(domain.getId().toString());
         response.setName(domain.getName());
         response.setType(domain.getType().toString());
+        response.setSystem(domain.isSystem());
 
         return response;
     }

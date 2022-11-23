@@ -1,6 +1,5 @@
 package com.vigourhub.backend.dto.accounts;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 

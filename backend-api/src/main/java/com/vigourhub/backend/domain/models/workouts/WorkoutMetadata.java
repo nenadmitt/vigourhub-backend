@@ -6,7 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class WorkoutMetadata {
-
+    int position;
     int set;
     int repetitions;
     float load;

@@ -1,6 +1,6 @@
-package com.vigourhub.backend.domain.models.adapters.impl;
+package com.vigourhub.backend.domain.adapters.impl;
 
-import com.vigourhub.backend.domain.models.adapters.WorkoutsRepositoryAdapter;
+import com.vigourhub.backend.domain.adapters.WorkoutsRepositoryAdapter;
 import com.vigourhub.backend.domain.models.workouts.RoutineWorkout;
 import com.vigourhub.backend.domain.models.workouts.Workout;
 import com.vigourhub.backend.domain.models.workouts.WorkoutPlan;
@@ -10,6 +10,8 @@ import com.vigourhub.backend.domain.repository.WorkoutPlanRepository;
 import com.vigourhub.backend.domain.repository.WorkoutRepository;
 import com.vigourhub.backend.domain.repository.WorkoutRoutineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -18,10 +20,10 @@ import java.util.UUID;
 @Component
 public class WorkoutsRepositoryAdapterImpl implements WorkoutsRepositoryAdapter {
 
-    private WorkoutRepository workoutRepository;
-    private WorkoutPlanRepository workoutPlanRepository;
-    private WorkoutRoutineRepository routineRepository;
-    private RoutineWorkoutRepository routineWorkoutRepository;
+    private final WorkoutRepository workoutRepository;
+    private final WorkoutPlanRepository workoutPlanRepository;
+    private final WorkoutRoutineRepository routineRepository;
+    private final RoutineWorkoutRepository routineWorkoutRepository;
 
     @Autowired
     public WorkoutsRepositoryAdapterImpl(WorkoutRepository workoutRepository, WorkoutPlanRepository workoutPlanRepository, WorkoutRoutineRepository routineRepository, RoutineWorkoutRepository routineWorkoutRepository) {
@@ -60,4 +62,10 @@ public class WorkoutsRepositoryAdapterImpl implements WorkoutsRepositoryAdapter 
     public Optional<Workout> getWorkoutById(UUID id) {
         return this.workoutRepository.findById(id);
     }
+
+    @Override
+    public Page<Workout> getPagedWorkoutsForAccount(UUID accountID, PageRequest request) {
+        return workoutRepository.findAllByAccountIdOrIsSystemTrue(accountID, request);
+    }
+
 }

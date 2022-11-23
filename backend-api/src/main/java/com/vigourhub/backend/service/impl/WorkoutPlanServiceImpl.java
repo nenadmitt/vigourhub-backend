@@ -1,6 +1,6 @@
 package com.vigourhub.backend.service.impl;
 
-import com.vigourhub.backend.domain.models.adapters.WorkoutsRepositoryAdapter;
+import com.vigourhub.backend.domain.adapters.WorkoutsRepositoryAdapter;
 import com.vigourhub.backend.domain.models.account.Account;
 import com.vigourhub.backend.domain.models.account.User;
 import com.vigourhub.backend.domain.models.workouts.*;
@@ -111,9 +111,9 @@ public class WorkoutPlanServiceImpl implements WorkoutPlanService {
         }
 
         WorkoutMetadata metadata = new WorkoutMetadata();
-        metadata.setLoad(1.1F);
-        metadata.setRepetitions(5);
-        metadata.setSet(5);
+//        metadata.setLoad(1.1F);
+//        metadata.setRepetitions(5);
+//        metadata.setSet(5);
 
         RoutineWorkout workout = new RoutineWorkout();
         workout.setId(UUID.randomUUID());

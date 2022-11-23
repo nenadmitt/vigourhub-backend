@@ -20,6 +20,18 @@ services:
       - "6379:6379"
     command: >
       --requirepass ${REDIS_PASSWORD}
+  rbmq-broker:
+    image: rabbitmq
+    container_name: rbmq_broker
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RBMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RBMQ_PASSWORD}
+    volumes:
+        - ~/vigourhub/rabbitmq/data/:/var/lib/rabbitmq/
+        - ~/vigourhub/rabbitmq/log/:/var/log/rabbitmq
   keycloak_postgres:
     image: postgres
     container_name: auth_server_db

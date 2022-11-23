@@ -16,6 +16,11 @@ spring:
       password: ${POSTGRES_PASSWORD}
   liquibase:
       change-log: db/migrations/master-changelog.yaml
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: ${RBMQ_USER}
+    password: ${RBMQ_PASSWORD}
 keycloak:
   url: ${KEYCLOAK_URL}
   client: ${KEYCLOAK_SERVICE_ACCOUNT}

@@ -41,6 +41,7 @@ public class JwtFilter extends OncePerRequestFilter {
         this.verifier = verifier;
         excluded.add("/api/v1/accounts");
         excluded.add("/api/v1/clients/register");
+        excluded.add("/test");
 
     }
 

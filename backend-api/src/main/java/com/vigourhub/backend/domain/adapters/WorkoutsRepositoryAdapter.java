@@ -1,9 +1,11 @@
-package com.vigourhub.backend.domain.models.adapters;
+package com.vigourhub.backend.domain.adapters;
 
 import com.vigourhub.backend.domain.models.workouts.RoutineWorkout;
 import com.vigourhub.backend.domain.models.workouts.Workout;
 import com.vigourhub.backend.domain.models.workouts.WorkoutPlan;
 import com.vigourhub.backend.domain.models.workouts.WorkoutRoutine;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -23,4 +25,6 @@ public interface WorkoutsRepositoryAdapter {
     void insert(RoutineWorkout workout);
 
     Optional<Workout> getWorkoutById(UUID id);
+
+    Page<Workout> getPagedWorkoutsForAccount(UUID accountID, PageRequest request);
 }

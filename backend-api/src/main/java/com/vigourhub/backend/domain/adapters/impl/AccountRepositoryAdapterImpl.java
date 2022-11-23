@@ -1,6 +1,6 @@
-package com.vigourhub.backend.domain.models.adapters.impl;
+package com.vigourhub.backend.domain.adapters.impl;
 
-import com.vigourhub.backend.domain.models.adapters.AccountRepositoryAdapter;
+import com.vigourhub.backend.domain.adapters.AccountRepositoryAdapter;
 import com.vigourhub.backend.domain.models.account.Account;
 import com.vigourhub.backend.domain.models.account.ClientInvitation;
 import com.vigourhub.backend.domain.models.account.Role;

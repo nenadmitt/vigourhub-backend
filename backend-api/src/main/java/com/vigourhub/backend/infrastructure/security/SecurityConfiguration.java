@@ -41,7 +41,7 @@ public class SecurityConfiguration {
         http.formLogin().disable();
         http.csrf().disable();
 
-        http.authorizeRequests().antMatchers("/api/v1/accounts","/api/v1/clients/register").permitAll()
+        http.authorizeRequests().antMatchers("/api/v1/accounts","/api/v1/clients/register", "/test").permitAll()
                 .anyRequest().authenticated();
 //                .antMatchers("/api/v1/accounts/*").hasRole("Instructor").anyRequest().authenticated();
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

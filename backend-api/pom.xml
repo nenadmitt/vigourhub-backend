@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.vigourhub</groupId>
-	<artifactId>vigourhub-backend</artifactId>
+	<artifactId>backend-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Vigourhub Backend Api</name>
 	<description>Backed API for Vigourhub</description>
@@ -17,6 +17,12 @@
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>
+
+		<!-- RabbitMQ -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-amqp</artifactId>
+		</dependency>
 
 		<!-- Jwt -->
 		<dependency>
