@@ -1,0 +1,25 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Welcome to Vigourhub</title>
+</head>
+<body>
+  <style>
+      .invite-button {
+         width:160px;
+         height: 40px;
+         background: blue;
+         border-radius: 5px;
+         outline: none;
+      }
+      .invite-button:hover {
+        background-color: red;
+      }
+
+  </style>
+  <div>Your Vigourhub account has been successuflly created!</div>
+  <div style="font-weight:bold; font-size:16px" th:text="${name}">name</div>
+  <a href="https://google.com">
+      <button class="invite-button">Approve</button>
+  </a>
+</body>
+</html>

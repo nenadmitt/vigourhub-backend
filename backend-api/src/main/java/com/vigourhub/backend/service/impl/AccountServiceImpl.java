@@ -14,6 +14,7 @@ import com.vigourhub.backend.infrastructure.security.SecurityUtils;
 import com.vigourhub.backend.infrastructure.security.keycloak.KeycloakContext;
 import com.vigourhub.backend.dto.keycloak.KeycloakUser;
 import com.vigourhub.backend.service.AccountService;
+import com.vigourhub.backend.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,10 +32,13 @@ public class AccountServiceImpl implements AccountService {
     private KeycloakContext keycloakContext;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
+    private final NotificationService notificationService;
+
     @Autowired
-    public AccountServiceImpl( AccountRepositoryAdapter accountAdapter, KeycloakContext keycloakContext) {
+    public AccountServiceImpl(AccountRepositoryAdapter accountAdapter, KeycloakContext keycloakContext, NotificationService notificationService) {
         this.accountAdapter = accountAdapter;
         this.keycloakContext = keycloakContext;
+        this.notificationService = notificationService;
     }
 
     @Override

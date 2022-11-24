@@ -6,6 +6,24 @@ spring:
     port: 5672
     username: "rbmquser"
     password: "rbmqpass"
+  mail:
+    host: smtp.mailgun.org
+    port: 587
+    username: postmaster@sandbox595bf33220984355aed3d388fae0ec6b.mailgun.org
+    password: 6b0f7150317c82b0b6a6bc0a1ebe1765-69210cfc-7782e26c
+    default-encoding: UTF-8
+    properties:
+      mail:
+        transport:
+          protocol: smtp
+        smtp:
+          starttls:
+            enable: true
+            required: true
+          auth: true
+          from: welcome@vigourhub.com
+        test-connection: false
+
 mailgun:
   api-key: "asdfasdf"
   username: "asdfasdf"

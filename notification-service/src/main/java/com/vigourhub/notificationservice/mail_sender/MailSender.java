@@ -1,6 +1,8 @@
 package com.vigourhub.notificationservice.mail_sender;
 
+import com.vigourhub.notificationservice.dto.EmailContext;
+
 public interface MailSender {
 
-    void sendEmail(EmailNotificationType type, String payload) throws Exception;
+    void sendEmail(EmailContext context) throws Exception;
 }

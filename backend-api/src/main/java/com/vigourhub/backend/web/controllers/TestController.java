@@ -1,8 +1,6 @@
 package com.vigourhub.backend.web.controllers;
 
-import com.vigourhub.backend.infrastructure.publisher.NotificationPublisher;
-import com.vigourhub.backend.infrastructure.publisher.TestDto;
-import com.vigourhub.backend.infrastructure.publisher.TestPublisher;
+import com.vigourhub.backend.publishers.impl.NotificationPublisherImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,20 +10,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/test")
 public class TestController {
 
-    private final TestPublisher publisher;
-    private final NotificationPublisher notificationPublisher;
+    private final NotificationPublisherImpl notificationPublisherImpl;
 
     @Autowired
-    public TestController(TestPublisher publisher, NotificationPublisher notificationPublisher) {
-        this.publisher = publisher;
-        this.notificationPublisher = notificationPublisher;
+    public TestController(NotificationPublisherImpl notificationPublisherImpl) {
+        this.notificationPublisherImpl = notificationPublisherImpl;
     }
 
     @GetMapping
     public void testing() {
-        publisher.send("This is message here!");
-
-        var dto = new TestDto("nenadmit","username-here");
-        this.notificationPublisher.send(dto);
+        this.notificationPublisherImpl.send("{\"username\":\"nenadmit\"}");
     }
 }
