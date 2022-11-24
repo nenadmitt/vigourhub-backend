@@ -1,14 +1,14 @@
 package com.vigourhub.backend.publishers.impl;
 
-import com.vigourhub.backend.dto.events.UserInfoDto;
+import com.vigourhub.backend.dto.events.AccountCreatedEvent;
+import com.vigourhub.backend.dto.events.UserInvitedEvent;
 import com.vigourhub.backend.publishers.NotificationPublisher;
+import com.vigourhub.backend.publishers.NotificationQueues;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.UUID;
 
 @Component
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -21,11 +21,12 @@ public class NotificationPublisherImpl implements NotificationPublisher {
         this.template = template;
     }
 
-    public void send(String message) {
-        UserInfoDto dto = new UserInfoDto();
-        dto.setId(UUID.randomUUID().toString());
-        dto.setEmail("nenadmitt@gmail.com");
-        template.convertAndSend("account.created", dto);
+    @Override
+    public void publishAccountCreated(AccountCreatedEvent event) {
+        template.convertAndSend(NotificationQueues.AccountCreated.value(), event);
     }
-
+    @Override
+    public void publishUserInvited(UserInvitedEvent event) {
+        template.convertAndSend(NotificationQueues.UserInvited.value(), event);
+    }
 }

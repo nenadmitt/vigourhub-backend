@@ -12,6 +12,7 @@ import org.thymeleaf.context.Context;
 
 import javax.mail.internet.MimeMessage;
 import java.util.Locale;
+import java.util.Map;
 
 @Component
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
@@ -32,17 +33,15 @@ public class MailgunMailSender implements MailSender{
 
     @Override
     public void sendEmail(EmailContext context) throws Exception {
-        final Context ctx = new Context(new Locale("en"));
-        ctx.setVariable("name", "Nenad Mitkovic");
-        ctx.setVariable("email", "nenadmitt@gmail.com");
 
-        final String htmlContent = this.templateEngine.process("new-account-template.html", ctx);
+        final Context ctx = toThymeleafContext(context.getTemplateContext());
+        final String htmlContent = this.templateEngine.process(context.getTemplateUrl(), ctx);
 
         final MimeMessage mimeMessage = this.mailSender.createMimeMessage();
         final MimeMessageHelper message =
                 new MimeMessageHelper(mimeMessage, true, "UTF-8"); // true = multipart
-        message.setSubject("Welcome to Vigourhub");
-        message.setFrom("welcome@vigourhub.com");
+        message.setSubject(context.getReceiver());
+        message.setFrom(context.getSender());
         message.setTo(context.getReceiver());
 
         message.setText(htmlContent, true);
@@ -52,5 +51,14 @@ public class MailgunMailSender implements MailSender{
         }catch(Exception e) {
             System.out.println("Exception ocurred while sending message " + e.getMessage());
         }
+    }
+
+    private Context toThymeleafContext(Map<String,String> ctx) {
+
+        var _ctx = new Context(new Locale("en"));
+        for (Map.Entry<String,String> entry : ctx.entrySet()){
+            _ctx.setVariable(entry.getKey(), entry.getValue());
+        }
+        return _ctx;
     }
 }

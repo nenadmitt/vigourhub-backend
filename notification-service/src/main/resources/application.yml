@@ -2,15 +2,15 @@ server:
   port: 8002
 spring:
   rabbitmq:
-    host: localhost
+    host: ${RBMQ_HOST}
     port: 5672
-    username: "rbmquser"
-    password: "rbmqpass"
+    username: ${RBMQ_USER}
+    password: ${RBMQ_PASS}
   mail:
     host: smtp.mailgun.org
     port: 587
-    username: postmaster@sandbox595bf33220984355aed3d388fae0ec6b.mailgun.org
-    password: 6b0f7150317c82b0b6a6bc0a1ebe1765-69210cfc-7782e26c
+    username: ${MAILGUN_USER}
+    password: ${MAILGUN_PASS}
     default-encoding: UTF-8
     properties:
       mail:

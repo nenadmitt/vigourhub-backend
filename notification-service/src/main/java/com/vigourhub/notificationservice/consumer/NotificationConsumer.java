@@ -1,10 +1,10 @@
 package com.vigourhub.notificationservice.consumer;
 
+import com.vigourhub.notificationservice.dto.NotificationEvent;
 import com.vigourhub.notificationservice.dto.NotificationQueues;
-import com.vigourhub.notificationservice.dto.UserInfoDto;
-import com.vigourhub.notificationservice.mail_sender.MailSender;
+import com.vigourhub.notificationservice.dto.events.AccountCreatedEvent;
+import com.vigourhub.notificationservice.dto.events.UserInvitedEvent;
 import com.vigourhub.notificationservice.service.NotificationService;
-import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -24,13 +24,13 @@ public class NotificationConsumer {
     }
 
     @RabbitListener(queues = "account.created")
-    private void accountCreatedListener(@Payload UserInfoDto userInfo) {
-        log.info("Received account.created message " + userInfo);
-        service.handle(NotificationQueues.AccountCreated, userInfo);
+    private void accountCreatedListener(@Payload AccountCreatedEvent event) {
+        log.info("Received account.created message " + event);
+        service.handleAccountCreated(event);
     }
 
     @RabbitListener(queues = {"user.invited"})
-    private void userInvitedListener(@Payload UserInfoDto userInfo) {
-        service.handle(NotificationQueues.UserInvited, userInfo);
+    private void userInvitedListener(@Payload UserInvitedEvent event) {
+        service.handleUserInvited(event);
     }
 }
