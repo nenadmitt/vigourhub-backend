@@ -25,7 +25,7 @@ public class KeycloakUser {
     private KeycloakCredentials[] _credentials;
 
     @JsonProperty("enabled")
-    private final boolean enabled = true;
+    private final boolean enabled = false;
 
     public KeycloakUser(String firstName, String lastName, String username, String password) {
         this.firstName = firstName;

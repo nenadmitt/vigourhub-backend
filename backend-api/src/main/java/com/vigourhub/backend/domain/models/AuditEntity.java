@@ -10,4 +10,8 @@ import java.time.LocalDateTime;
 public class AuditEntity {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    public AuditEntity() {
+        this.createdAt = LocalDateTime.now();
+    }
 }

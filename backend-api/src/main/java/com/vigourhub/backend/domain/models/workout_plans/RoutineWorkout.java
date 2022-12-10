@@ -1,14 +1,12 @@
-package com.vigourhub.backend.domain.models.workouts;
+package com.vigourhub.backend.domain.models.workout_plans;
 
 import com.vigourhub.backend.domain.converters.WorkoutMetadataConverter;
 import com.vigourhub.backend.domain.models.AuditEntity;
+import com.vigourhub.backend.domain.models.workouts.Workout;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
-import java.util.List;
 import java.util.UUID;
 
 @Entity(name = "routine_workouts")

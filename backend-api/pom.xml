@@ -18,6 +18,13 @@
 	</properties>
 	<dependencies>
 
+		<!-- Keycloak Admin CLI -->
+		<dependency>
+			<groupId>org.keycloak</groupId>
+			<artifactId>keycloak-admin-client</artifactId>
+			<version>19.0.3</version>
+		</dependency>
+
 		<!-- RabbitMQ -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

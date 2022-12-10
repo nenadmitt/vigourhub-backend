@@ -1,67 +1,102 @@
 package com.vigourhub.backend.infrastructure.security.keycloak;
 
+import com.vigourhub.backend.dto.accounts.AdminUserRequest;
+import com.vigourhub.backend.infrastructure.exceptions.InternalServerError;
 import com.vigourhub.backend.infrastructure.properties.KeycloakProperties;
-import com.vigourhub.backend.dto.keycloak.KeycloakAuthRequest;
-import com.vigourhub.backend.dto.keycloak.KeycloakAuthResponse;
 import com.vigourhub.backend.dto.keycloak.KeycloakUser;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+import org.keycloak.admin.client.Keycloak;
+import org.keycloak.representations.idm.CredentialRepresentation;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 import javax.naming.AuthenticationException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 @Component
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class KeycloakContext {
-    public final Logger logger = Logger.getLogger(this.getClass().getName());
-    private RestTemplate http;
-    private KeycloakProperties properties;
-    private String accessToken;
+    Logger logger = Logger.getLogger(this.getClass().getName());
+    KeycloakProperties properties;
+    Keycloak keycloak;
 
     @Autowired
-    public KeycloakContext(RestTemplateBuilder builder, KeycloakProperties properties) {
-        this.http = builder.build();
+    public KeycloakContext(KeycloakProperties properties, Keycloak keycloak) {
         this.properties = properties;
-        this.initializeContext();
-        logger.info("Initializing KeycloakContext");
+        this.keycloak = keycloak;
     }
-    public void createKeycloakUser(KeycloakUser user) throws AuthenticationException {
 
-        var usersEndpoint = properties.getUrl() + properties.getUsersEndpoint();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(this.accessToken);
 
-        HttpEntity<KeycloakUser> request = new HttpEntity(user, headers);
+    public UUID createKeycloakUser(AdminUserRequest user) throws Exception {
+
         try {
-            var response = this.http.postForEntity(usersEndpoint, request, Void.class);
-        }catch(Exception ex) {
-            throw new AuthenticationException(ex.getMessage());
-        }
 
+            UserRepresentation representation = new UserRepresentation();
+            representation.setUsername(user.getUsername());
+            representation.setEmail(user.getUsername());
+            representation.setFirstName(user.getFirstName());
+            representation.setLastName(user.getLastName());
+            representation.setEnabled(false);
+            representation.setEmailVerified(false);
+
+            CredentialRepresentation credentials = new CredentialRepresentation();
+            credentials.setType(CredentialRepresentation.PASSWORD);
+            credentials.setTemporary(false);
+            credentials.setValue(user.getPassword());
+
+            representation.setCredentials(List.of(credentials));
+            var resp = keycloak.realm("vigourhub").users().create(representation);
+            System.out.println(resp.getHeaders());
+            return UUID.randomUUID();
+        }catch (Exception ex) {
+            throw new InternalServerError("Error creating keycloak user " + ex.getMessage());
+        }
+    }
+
+    public void enableKeycloakUser(UUID userId) {
+
+        var realm = keycloak.realm("vigourhub");
+        var user = keycloak.realm("vigourhub").users().get(userId.toString());
+        var representation = user.toRepresentation();
+        representation.setEnabled(true);
+        representation.setEmailVerified(true);
+        user.update(representation);
+
+    }
+
+    public UUID createKeycloakUser(KeycloakUser user) throws AuthenticationException {
+
+       return UUID.randomUUID();
     }
     private void initializeContext() {
 
-        try {
-            var tokenEndpoint = properties.getUrl() + properties.getTokenEndpoint();
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-            var auth = new KeycloakAuthRequest();
-            auth.setClientId(properties.getClient());
-            auth.setClientSecret(properties.getSecret());
+    }
 
-            HttpEntity<MultiValueMap<String,String>> request = new HttpEntity<>(auth.toMap(), headers);
-            var response = this.http.postForEntity(tokenEndpoint, request, KeycloakAuthResponse.class);
-            this.accessToken = Objects.requireNonNull(response.getBody()).getToken();
-        }catch(Exception e) {
-            logger.info(String.format("Error creating keycloak context: %s",e.getMessage()));
-            System.exit(-1);
+    private UUID getKeycloakIdFromHeaders(HttpHeaders headers) throws Exception {
+        List<String> locationString = headers.get(HttpHeaders.LOCATION);
+        var errorMessage = "Cannot get keycloak id from headers";
+
+        if (locationString == null || locationString.isEmpty()) {
+            throw new InternalServerError(errorMessage);
         }
+
+        var locationUrl = locationString.get(0);
+        var split = locationUrl.split("/");
+        var userId = split[split.length - 1];
+
+        UUID id;
+        try {
+            id = UUID.fromString(userId);
+        }catch (IllegalArgumentException ex) {
+            throw new InternalServerError(errorMessage);
+        }
+        return id;
     }
 }

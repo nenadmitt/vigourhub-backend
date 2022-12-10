@@ -1,6 +1,6 @@
 package com.vigourhub.backend.dto.workout_plans;
 
-import com.vigourhub.backend.domain.models.workouts.WorkoutMetadata;
+import com.vigourhub.backend.domain.models.workout_plans.WorkoutMetadata;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

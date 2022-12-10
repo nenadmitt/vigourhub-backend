@@ -1,10 +1,10 @@
 package com.vigourhub.backend.domain.adapters.impl;
 
 import com.vigourhub.backend.domain.adapters.WorkoutsRepositoryAdapter;
-import com.vigourhub.backend.domain.models.workouts.RoutineWorkout;
+import com.vigourhub.backend.domain.models.workout_plans.RoutineWorkout;
 import com.vigourhub.backend.domain.models.workouts.Workout;
-import com.vigourhub.backend.domain.models.workouts.WorkoutPlan;
-import com.vigourhub.backend.domain.models.workouts.WorkoutRoutine;
+import com.vigourhub.backend.domain.models.workout_plans.WorkoutPlan;
+import com.vigourhub.backend.domain.models.workout_plans.WorkoutRoutine;
 import com.vigourhub.backend.domain.repository.RoutineWorkoutRepository;
 import com.vigourhub.backend.domain.repository.WorkoutPlanRepository;
 import com.vigourhub.backend.domain.repository.WorkoutRepository;

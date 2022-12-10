@@ -28,4 +28,5 @@ keycloak:
   token-endpoint: "/auth/realms/vigourhub/protocol/openid-connect/token"
   users-endpoint: "/auth/admin/realms/vigourhub/users"
   validation-endpoint: "/auth/realms/vigourhub/protocol/openid-connect/userinfo"
+  realm: "vigourhub"
   pubkey: ${KEYCLOAK_PUBLIC_KEY}

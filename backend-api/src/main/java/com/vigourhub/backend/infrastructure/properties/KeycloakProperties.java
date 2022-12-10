@@ -20,4 +20,5 @@ public class KeycloakProperties {
     private String usersEndpoint;
     private String validationEndpoint;
     private String pubkey;
+    private String realm;
 }

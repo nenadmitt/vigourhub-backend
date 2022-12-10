@@ -2,7 +2,7 @@ package com.vigourhub.backend.domain.converters;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vigourhub.backend.domain.models.workouts.WorkoutMetadata;
+import com.vigourhub.backend.domain.models.workout_plans.WorkoutMetadata;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;

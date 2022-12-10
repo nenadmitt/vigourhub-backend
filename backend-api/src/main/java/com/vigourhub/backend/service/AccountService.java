@@ -10,4 +10,6 @@ public interface AccountService {
     AccountResponseDto createAccount(AccountRequestDto request) throws Exception;
     ClientInvitationDto generateClientInvitation(String username) throws Exception;
     IdResponseDto registerInvitedClient(String token, ClientRegistrationRequestDto userDto) throws Exception;
+
+    void approveRegistration(String token) throws Exception;
 }

@@ -17,6 +17,8 @@ public class User extends AuditEntity {
     private String username;
     private String firstName;
     private String lastName;
+    private UUID keycloakId;
+    private boolean emailApproved;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

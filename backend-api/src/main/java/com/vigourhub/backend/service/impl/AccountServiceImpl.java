@@ -7,6 +7,7 @@ import com.vigourhub.backend.domain.models.account.Role;
 import com.vigourhub.backend.domain.models.account.User;
 import com.vigourhub.backend.dto.IdResponseDto;
 import com.vigourhub.backend.dto.accounts.*;
+import com.vigourhub.backend.dto.users.UserDto;
 import com.vigourhub.backend.infrastructure.exceptions.ConflictException;
 import com.vigourhub.backend.infrastructure.exceptions.InternalServerError;
 import com.vigourhub.backend.infrastructure.exceptions.NotFoundException;
@@ -71,7 +72,7 @@ public class AccountServiceImpl implements AccountService {
         );
 
         try {
-            this.keycloakContext.createKeycloakUser(keycloakUser);
+            var keycloakId = this.keycloakContext.createKeycloakUser(request.getUser());
 
             User user = new User();
             user.setId(UUID.randomUUID());
@@ -79,6 +80,8 @@ public class AccountServiceImpl implements AccountService {
             user.setFirstName(userRequest.getFirstName());
             user.setLastName(userRequest.getLastName());
             user.setAccount(account);
+            user.setKeycloakId(keycloakId);
+            user.setEmailApproved(false);
 
             Optional<Role> instructorRole = accountAdapter.findRoleByName(ROLE_INSTRUCTOR);
             List<Role> roles = new ArrayList<>();
@@ -87,7 +90,11 @@ public class AccountServiceImpl implements AccountService {
             user.setRoles(roles);
 
             accountAdapter.insert(user);
+
+            UserDto dto = UserDto.fromDomain(user);
+            notificationService.sendAccountCreatedNotification(dto);
         }catch (Exception ex) {
+            System.out.println("HERE");
             throw new InternalServerError(ex.getMessage());
         }
 
@@ -144,6 +151,7 @@ public class AccountServiceImpl implements AccountService {
         client.setId(UUID.randomUUID());
         client.setFirstName(userDto.getFirstName());
         client.setLastName(userDto.getLastName());
+        client.setEmailApproved(false);
 
         KeycloakUser keycloakUser = new KeycloakUser(
                 userDto.getFirstName(),
@@ -152,12 +160,15 @@ public class AccountServiceImpl implements AccountService {
                 userDto.getPassword()
         );
 
+        UUID keycloakId;
         try {
-            keycloakContext.createKeycloakUser(keycloakUser);
+            keycloakId = keycloakContext.createKeycloakUser(keycloakUser);
         }catch (Exception ex) {
             logger.info(ex.getMessage());
             throw new InternalServerError(ex.getMessage());
         }
+
+        client.setKeycloakId(keycloakId);
 
         var account = new Account();
         account.setId(_invitation.getAccountId());
@@ -177,5 +188,9 @@ public class AccountServiceImpl implements AccountService {
         this.accountAdapter.removeInvitation(_invitation.getId());
 
         return new IdResponseDto(userId);
+    }
+    @Override
+    public void approveRegistration(String token) throws Exception {
+
     }
 }

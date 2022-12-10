@@ -30,15 +30,4 @@ public class AccountController {
     public ResponseEntity<AccountResponseDto> createAccount(@Valid @RequestBody AccountRequestDto request) throws Exception {
         return ResponseEntity.ok(accountService.createAccount(request));
     }
-
-    @GetMapping("/test")
-    public ResponseEntity<String> testFilter() {
-
-        var context = SecurityContextHolder.getContext();
-        SecurityAuthentication auth = (SecurityAuthentication) context.getAuthentication();
-        System.out.println(auth.getName());
-        System.out.println(auth.getDetails().toString());
-        auth.getAuthorities().stream().forEach(a -> System.out.println(a.toString()));
-        return ResponseEntity.ok("Hello There!");
-    }
 }

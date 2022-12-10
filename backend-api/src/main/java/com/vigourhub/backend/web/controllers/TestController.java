@@ -16,9 +16,4 @@ public class TestController {
     public TestController(NotificationPublisherImpl notificationPublisherImpl) {
         this.notificationPublisherImpl = notificationPublisherImpl;
     }
-
-    @GetMapping
-    public void testing() {
-        this.notificationPublisherImpl.send("{\"username\":\"nenadmit\"}");
-    }
 }

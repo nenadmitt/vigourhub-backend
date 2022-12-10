@@ -1,4 +1,4 @@
-package com.vigourhub.backend.domain.models.workouts;
+package com.vigourhub.backend.domain.models.workout_plans;
 
 import lombok.Getter;
 import lombok.Setter;
