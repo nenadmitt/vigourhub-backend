@@ -1,38 +1,42 @@
 package com.vigourhub.backend.service.impl;
 
-import com.vigourhub.backend.domain.adapters.WorkoutsRepositoryAdapter;
-import com.vigourhub.backend.domain.models.account.Account;
-import com.vigourhub.backend.domain.models.account.User;
-import com.vigourhub.backend.domain.models.workout_plans.RoutineWorkout;
-import com.vigourhub.backend.domain.models.workout_plans.WorkoutMetadata;
-import com.vigourhub.backend.domain.models.workout_plans.WorkoutPlan;
-import com.vigourhub.backend.domain.models.workout_plans.WorkoutRoutine;
-import com.vigourhub.backend.domain.models.workouts.*;
+import com.vigourhub.backend.domain.adapters.WorkoutPlansRepositoryAdapter;
+import com.vigourhub.backend.domain.entity.account.Account;
+import com.vigourhub.backend.domain.entity.account.User;
+import com.vigourhub.backend.domain.entity.workout_plans.*;
 import com.vigourhub.backend.dto.IdResponseDto;
-import com.vigourhub.backend.dto.workout_plans.FullWorkoutPlanDto;
-import com.vigourhub.backend.dto.workout_plans.WorkoutPlanRequest;
+import com.vigourhub.backend.dto.workout_plans.RoutineWorkoutRequestDTO;
+import com.vigourhub.backend.dto.workout_plans.WorkoutPlanResponseDTO;
+import com.vigourhub.backend.dto.workout_plans.WorkoutPlanRequestDTO;
 import com.vigourhub.backend.infrastructure.exceptions.ForbiddenException;
 import com.vigourhub.backend.infrastructure.exceptions.NotFoundException;
-import com.vigourhub.backend.infrastructure.security.SecurityUtils;
+import com.vigourhub.backend.security.SecurityUtils;
 import com.vigourhub.backend.service.WorkoutPlanService;
+import com.vigourhub.backend.service.mapper.WorkoutPlanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class WorkoutPlanServiceImpl implements WorkoutPlanService {
 
-    private WorkoutsRepositoryAdapter workoutRepositoryAdapter;
+    private WorkoutPlansRepositoryAdapter workoutRepositoryAdapter;
+
+    private WorkoutPlanMapper workoutPlanMapper;
 
     @Autowired
-    public WorkoutPlanServiceImpl(WorkoutsRepositoryAdapter workoutRepositoryAdapter) {
+    public WorkoutPlanServiceImpl(WorkoutPlansRepositoryAdapter workoutRepositoryAdapter, WorkoutPlanMapper workoutPlanMapper) {
         this.workoutRepositoryAdapter = workoutRepositoryAdapter;
+        this.workoutPlanMapper = workoutPlanMapper;
     }
 
     @Override
-    public IdResponseDto createWorkoutPlan(WorkoutPlanRequest request) {
+    public IdResponseDto createWorkoutPlan(WorkoutPlanRequestDTO request) {
 
         var principal = SecurityUtils.getCurrentPrincipal();
 
@@ -80,7 +84,7 @@ public class WorkoutPlanServiceImpl implements WorkoutPlanService {
     }
 
     @Override
-    public IdResponseDto addRoutineWorkout(UUID workoutPlanId, UUID routineId) throws Exception {
+    public IdResponseDto addRoutineWorkout(UUID workoutPlanId, UUID routineId, RoutineWorkoutRequestDTO requestDTO) throws Exception {
 
         var optionalPlan = getPlan(workoutPlanId);
         if (optionalPlan.isEmpty()) {
@@ -101,46 +105,50 @@ public class WorkoutPlanServiceImpl implements WorkoutPlanService {
             throw new NotFoundException("Routine not found");
         }
 
+        var routine = optionalRoutine.get();
 
-        var routine = new WorkoutRoutine();
-        routine.setId(routineId);
+        var workoutID = UUID.fromString(requestDTO.getWorkoutId());
+        var optionalWorkout = workoutRepositoryAdapter.getWorkoutById(workoutID);
 
-
-        var deadliftId = UUID.fromString("ee797847-3d99-44e6-b36d-db569e9e2715");
-        System.out.println(deadliftId.toString());
-        Optional<Workout> optionalWorkout = this.workoutRepositoryAdapter.getWorkoutById(deadliftId);
 
         if (optionalWorkout.isEmpty()) {
             throw new NotFoundException("Workout not found");
         }
 
         WorkoutMetadata metadata = new WorkoutMetadata();
-//        metadata.setLoad(1.1F);
-//        metadata.setRepetitions(5);
-//        metadata.setSet(5);
+        var workingSetsDTO = requestDTO.getWorkingSets();
+        List<WorkingSet> sets = new ArrayList<>(workingSetsDTO.size());
+
+        AtomicInteger i = new AtomicInteger(1);
+        workingSetsDTO.forEach(dto -> {
+            sets.add(workoutPlanMapper.toWorkingSet(dto));
+        });
 
         RoutineWorkout workout = new RoutineWorkout();
         workout.setId(UUID.randomUUID());
         workout.setRoutine(routine);
         workout.setWorkout(optionalWorkout.get());
-
-
-        workout.setMetadata(metadata);
+        workout.setWorkingSets(sets);
+        workout.setWorkoutExecutionType(requestDTO.getExecutionType());
 
         this.workoutRepositoryAdapter.insert(workout);
-        return null;
+        return new IdResponseDto(workout.getId().toString());
     }
 
     @Override
-    public FullWorkoutPlanDto getFullWorkoutPlan(UUID workoutPlanId) throws NotFoundException {
+    public WorkoutPlanResponseDTO getFullWorkoutPlan(UUID workoutPlanId) throws NotFoundException {
 
         Optional<WorkoutPlan> optionalPlan = workoutRepositoryAdapter.getPlanById(workoutPlanId);
 
         if (optionalPlan.isEmpty()) {
             throw new NotFoundException("Plan not found");
         }
+        var workout = optionalPlan.get().getRoutines().get(0).getWorkouts().get(0);
 
-        return FullWorkoutPlanDto.fromDomain(optionalPlan.get());
+        System.out.println(workout.getWorkingSets());
+        System.out.println(workout.getWorkingSets().getClass().getName());
+
+        return workoutPlanMapper.toPlanResponse(optionalPlan.get());
     }
 
     private Optional<WorkoutPlan> getPlan(UUID workoutPlanID) {

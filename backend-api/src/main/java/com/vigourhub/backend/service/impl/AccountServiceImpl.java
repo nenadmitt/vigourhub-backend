@@ -1,21 +1,21 @@
 package com.vigourhub.backend.service.impl;
 
 import com.vigourhub.backend.domain.adapters.AccountRepositoryAdapter;
-import com.vigourhub.backend.domain.models.account.Account;
-import com.vigourhub.backend.domain.models.account.ClientInvitation;
-import com.vigourhub.backend.domain.models.account.Role;
-import com.vigourhub.backend.domain.models.account.User;
+import com.vigourhub.backend.domain.entity.account.Account;
+import com.vigourhub.backend.domain.entity.account.ClientInvitation;
+import com.vigourhub.backend.domain.entity.account.Role;
+import com.vigourhub.backend.domain.entity.account.User;
 import com.vigourhub.backend.dto.IdResponseDto;
 import com.vigourhub.backend.dto.accounts.*;
-import com.vigourhub.backend.dto.users.UserDto;
+import com.vigourhub.backend.dto.accounts.UserResponseDTO;
 import com.vigourhub.backend.infrastructure.exceptions.ConflictException;
 import com.vigourhub.backend.infrastructure.exceptions.InternalServerError;
 import com.vigourhub.backend.infrastructure.exceptions.NotFoundException;
-import com.vigourhub.backend.infrastructure.security.SecurityUtils;
-import com.vigourhub.backend.infrastructure.security.keycloak.KeycloakContext;
-import com.vigourhub.backend.dto.keycloak.KeycloakUser;
+import com.vigourhub.backend.security.SecurityUtils;
+import com.vigourhub.backend.security.keycloak.KeycloakContext;
 import com.vigourhub.backend.service.AccountService;
 import com.vigourhub.backend.service.NotificationService;
+import com.vigourhub.backend.service.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +29,8 @@ public class AccountServiceImpl implements AccountService {
 
     private final String ROLE_INSTRUCTOR = "Instructor";
     private final String ROLE_CLIENT = "Client";
+
+    private final UserMapper mapper;
     private final AccountRepositoryAdapter accountAdapter;
     private KeycloakContext keycloakContext;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
@@ -36,7 +38,8 @@ public class AccountServiceImpl implements AccountService {
     private final NotificationService notificationService;
 
     @Autowired
-    public AccountServiceImpl(AccountRepositoryAdapter accountAdapter, KeycloakContext keycloakContext, NotificationService notificationService) {
+    public AccountServiceImpl(UserMapper mapper, AccountRepositoryAdapter accountAdapter, KeycloakContext keycloakContext, NotificationService notificationService) {
+        this.mapper = mapper;
         this.accountAdapter = accountAdapter;
         this.keycloakContext = keycloakContext;
         this.notificationService = notificationService;
@@ -44,7 +47,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public AccountResponseDto createAccount(AccountRequestDto request) throws Exception {
+    public AccountResponseDTO createAccount(AccountRequestDTO request) throws Exception {
 
         Account account = new Account();
         account.setId(UUID.randomUUID());
@@ -52,6 +55,7 @@ public class AccountServiceImpl implements AccountService {
         account.setTrial(true);
         account.setTrialStarted(LocalDateTime.now());
         account.setCreatedAt(LocalDateTime.now());
+
 
         accountAdapter.insert(account);
 
@@ -62,43 +66,35 @@ public class AccountServiceImpl implements AccountService {
             throw new ConflictException(String.format("User with username %s already exists", username));
         }
 
-        AdminUserRequest userRequest = request.getUser();
-
-        KeycloakUser keycloakUser = new KeycloakUser(
-                userRequest.getFirstName(),
-                userRequest.getLastName(),
-                userRequest.getUsername(),
-                userRequest.getPassword()
-        );
+        UserRequestDTO userRequest = request.getUser();
 
         try {
-            var keycloakId = this.keycloakContext.createKeycloakUser(request.getUser());
+            var keycloakId = this.keycloakContext.createKeycloakUser(userRequest);
 
-            User user = new User();
+            User user = mapper.toUserDomain(userRequest);
             user.setId(UUID.randomUUID());
-            user.setUsername(userRequest.getUsername());
-            user.setFirstName(userRequest.getFirstName());
-            user.setLastName(userRequest.getLastName());
             user.setAccount(account);
             user.setKeycloakId(keycloakId);
             user.setEmailApproved(false);
 
             Optional<Role> instructorRole = accountAdapter.findRoleByName(ROLE_INSTRUCTOR);
             List<Role> roles = new ArrayList<>();
+
+            if (instructorRole.isEmpty()) {
+                throw new InternalServerError("Role is not present");
+            }
+
             roles.add(instructorRole.get());
-
             user.setRoles(roles);
-
             accountAdapter.insert(user);
 
-            UserDto dto = UserDto.fromDomain(user);
+            UserResponseDTO dto = mapper.toUserResponseDTO(user);
             notificationService.sendAccountCreatedNotification(dto);
+
+            return mapper.toAccountDTO(account, user);
         }catch (Exception ex) {
-            System.out.println("HERE");
             throw new InternalServerError(ex.getMessage());
         }
-
-        return null;
     }
 
     @Override
@@ -136,7 +132,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public IdResponseDto registerInvitedClient(String token, ClientRegistrationRequestDto userDto) throws Exception {
+    public IdResponseDto registerInvitedClient(String token, UserRequestDTO request) throws Exception {
 
         Optional<ClientInvitation> invitation = this.accountAdapter.findInvitationById(token);
 
@@ -149,20 +145,13 @@ public class AccountServiceImpl implements AccountService {
         User client = new User();
         client.setUsername(_invitation.getUsername());
         client.setId(UUID.randomUUID());
-        client.setFirstName(userDto.getFirstName());
-        client.setLastName(userDto.getLastName());
+        client.setFirstName(request.getFirstName());
+        client.setLastName(request.getLastName());
         client.setEmailApproved(false);
-
-        KeycloakUser keycloakUser = new KeycloakUser(
-                userDto.getFirstName(),
-                userDto.getLastName(),
-                _invitation.getUsername(),
-                userDto.getPassword()
-        );
 
         UUID keycloakId;
         try {
-            keycloakId = keycloakContext.createKeycloakUser(keycloakUser);
+            keycloakId = keycloakContext.createKeycloakUser(request);
         }catch (Exception ex) {
             logger.info(ex.getMessage());
             throw new InternalServerError(ex.getMessage());

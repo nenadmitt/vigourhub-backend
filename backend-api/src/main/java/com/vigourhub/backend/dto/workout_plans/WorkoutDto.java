@@ -1,6 +1,6 @@
 package com.vigourhub.backend.dto.workout_plans;
 
-import com.vigourhub.backend.domain.models.workouts.Workout;
+import com.vigourhub.backend.domain.entity.workouts.Workout;
 import lombok.Getter;
 import lombok.Setter;
 

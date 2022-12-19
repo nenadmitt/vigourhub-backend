@@ -1,6 +1,6 @@
 package com.vigourhub.backend.domain.repository;
 
-import com.vigourhub.backend.domain.models.account.ClientInvitation;
+import com.vigourhub.backend.domain.entity.account.ClientInvitation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

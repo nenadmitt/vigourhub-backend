@@ -1,8 +1,8 @@
 package com.vigourhub.backend.service;
 
-import com.vigourhub.backend.dto.users.UserDto;
+import com.vigourhub.backend.dto.accounts.UserResponseDTO;
 
 public interface NotificationService {
 
-    void sendAccountCreatedNotification(UserDto accountOwner);
+    void sendAccountCreatedNotification(UserResponseDTO accountOwner);
 }

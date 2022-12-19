@@ -1,7 +1,7 @@
 package com.vigourhub.backend.web.controllers;
 
-import com.vigourhub.backend.infrastructure.security.SecurityAuthentication;
-import com.vigourhub.backend.infrastructure.security.SecurityUserDetails;
+import com.vigourhub.backend.security.SecurityAuthentication;
+import com.vigourhub.backend.security.SecurityUserDetails;
 import com.vigourhub.backend.service.SubscriptionService;
 import com.vigourhub.backend.web.WebConstants;
 import com.vigourhub.backend.dto.accounts.SubscriptionDto;

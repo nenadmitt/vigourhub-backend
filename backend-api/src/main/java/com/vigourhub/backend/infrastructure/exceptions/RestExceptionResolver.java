@@ -11,18 +11,19 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 
 @ControllerAdvice
 public class RestExceptionResolver extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        ApiError error = new ApiError();
-        error.setMessage(ex.getMessage());
-        error.setStatus(HttpStatus.BAD_REQUEST.value());
-        error.setTimestamp(LocalDateTime.now());
+        var errorMap = new HashMap<String,String>();
+        for (var fieldError : ex.getFieldErrors()) {
+            errorMap.put(fieldError.getField(), fieldError.getDefaultMessage());
+        }
 
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorMap, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(NotFoundException.class)
@@ -42,6 +43,11 @@ public class RestExceptionResolver extends ResponseEntityExceptionHandler {
     @ExceptionHandler(InternalServerError.class)
     public ResponseEntity<ApiError> handleException(InternalServerError ex) {
         return new ResponseEntity<>(newApiError(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ApiError> handleException(UnauthorizedException ex) {
+        return new ResponseEntity<>(newApiError(ex.getMessage(), HttpStatus.UNAUTHORIZED.value()), HttpStatus.UNAUTHORIZED);
     }
 
     private ApiError newApiError(String msg, int status) {

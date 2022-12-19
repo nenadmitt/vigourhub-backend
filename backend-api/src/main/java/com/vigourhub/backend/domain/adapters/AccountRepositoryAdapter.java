@@ -1,9 +1,9 @@
 package com.vigourhub.backend.domain.adapters;
 
-import com.vigourhub.backend.domain.models.account.Account;
-import com.vigourhub.backend.domain.models.account.ClientInvitation;
-import com.vigourhub.backend.domain.models.account.Role;
-import com.vigourhub.backend.domain.models.account.User;
+import com.vigourhub.backend.domain.entity.account.Account;
+import com.vigourhub.backend.domain.entity.account.ClientInvitation;
+import com.vigourhub.backend.domain.entity.account.Role;
+import com.vigourhub.backend.domain.entity.account.User;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;

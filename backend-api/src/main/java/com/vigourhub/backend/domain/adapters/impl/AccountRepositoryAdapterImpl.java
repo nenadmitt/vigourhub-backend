@@ -1,10 +1,10 @@
 package com.vigourhub.backend.domain.adapters.impl;
 
 import com.vigourhub.backend.domain.adapters.AccountRepositoryAdapter;
-import com.vigourhub.backend.domain.models.account.Account;
-import com.vigourhub.backend.domain.models.account.ClientInvitation;
-import com.vigourhub.backend.domain.models.account.Role;
-import com.vigourhub.backend.domain.models.account.User;
+import com.vigourhub.backend.domain.entity.account.Account;
+import com.vigourhub.backend.domain.entity.account.ClientInvitation;
+import com.vigourhub.backend.domain.entity.account.Role;
+import com.vigourhub.backend.domain.entity.account.User;
 import com.vigourhub.backend.domain.repository.AccountRepository;
 import com.vigourhub.backend.domain.repository.ClientInvitationRepository;
 import com.vigourhub.backend.domain.repository.RoleRepository;

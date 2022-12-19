@@ -1,6 +1,6 @@
 package com.vigourhub.backend.service.impl;
 
-import com.vigourhub.backend.domain.models.account.Subscription;
+import com.vigourhub.backend.domain.entity.account.Subscription;
 import com.vigourhub.backend.domain.repository.SubscriptionRepository;
 import com.vigourhub.backend.service.SubscriptionService;
 import com.vigourhub.backend.service.mapper.SubscriptionMapper;

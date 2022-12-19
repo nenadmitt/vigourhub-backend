@@ -1,6 +1,6 @@
 package com.vigourhub.backend.domain.repository;
 
-import com.vigourhub.backend.domain.models.workout_plans.RoutineWorkout;
+import com.vigourhub.backend.domain.entity.workout_plans.RoutineWorkout;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;

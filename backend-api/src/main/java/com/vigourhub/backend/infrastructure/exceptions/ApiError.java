@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class ApiError {
-
     private String message;
     private LocalDateTime timestamp;
     private int status;

@@ -1,9 +1,9 @@
 package com.vigourhub.backend.service.impl;
 
 import com.vigourhub.backend.domain.adapters.AccountRepositoryAdapter;
-import com.vigourhub.backend.domain.models.account.Role;
-import com.vigourhub.backend.domain.models.account.User;
-import com.vigourhub.backend.dto.users.UserDto;
+import com.vigourhub.backend.domain.entity.account.Role;
+import com.vigourhub.backend.domain.entity.account.User;
+import com.vigourhub.backend.dto.accounts.UserResponseDTO;
 import com.vigourhub.backend.infrastructure.exceptions.NotFoundException;
 import com.vigourhub.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto getByUsername(String username) throws NotFoundException {
+    public UserResponseDTO getByUsername(String username) throws NotFoundException {
 
         var optionalUser = accountAdapter.findUserByUsername(username);
 
@@ -35,8 +35,8 @@ public class UserServiceImpl implements UserService {
         return toDto(user);
     }
 
-    public UserDto toDto(User user) {
-        var dto = new UserDto();
+    public UserResponseDTO toDto(User user) {
+        var dto = new UserResponseDTO();
         dto.setUsername(user.getUsername());
         dto.setFirstName(user.getFirstName());
         dto.setLastName(user.getLastName());

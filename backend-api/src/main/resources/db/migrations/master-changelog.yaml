@@ -39,3 +39,11 @@ databaseChangeLog:
   - include:
       file: sql/005_add_additional_account_fields.sql
       relativeToChangelogFile: true
+
+  - changeSet:
+      id: 6
+      author: Nenad
+
+  - include:
+      file: sql/006_modify_routine_workouts.sql
+      relativeToChangelogFile: true

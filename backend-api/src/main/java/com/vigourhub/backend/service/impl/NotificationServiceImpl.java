@@ -1,6 +1,6 @@
 package com.vigourhub.backend.service.impl;
 
-import com.vigourhub.backend.dto.users.UserDto;
+import com.vigourhub.backend.dto.accounts.UserResponseDTO;
 import com.vigourhub.backend.publishers.impl.NotificationPublisherImpl;
 import com.vigourhub.backend.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public void sendAccountCreatedNotification(UserDto accountOwner) {
+    public void sendAccountCreatedNotification(UserResponseDTO accountOwner) {
 
     }
 }

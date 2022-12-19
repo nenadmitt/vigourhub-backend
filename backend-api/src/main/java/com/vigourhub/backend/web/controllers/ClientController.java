@@ -3,6 +3,7 @@ package com.vigourhub.backend.web.controllers;
 import com.vigourhub.backend.dto.IdResponseDto;
 import com.vigourhub.backend.dto.accounts.ClientInvitationDto;
 import com.vigourhub.backend.dto.accounts.ClientRegistrationRequestDto;
+import com.vigourhub.backend.dto.accounts.UserRequestDTO;
 import com.vigourhub.backend.service.AccountService;
 import com.vigourhub.backend.web.WebConstants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class ClientController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<IdResponseDto> registerClient(@RequestParam String invitationToken, @RequestBody ClientRegistrationRequestDto request) throws Exception {
+    public ResponseEntity<IdResponseDto> registerClient(@RequestParam String invitationToken, @RequestBody UserRequestDTO request) throws Exception {
         return ResponseEntity.ok(service.registerInvitedClient(invitationToken, request));
     }
 }
