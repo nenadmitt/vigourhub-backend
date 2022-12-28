@@ -1,11 +1,11 @@
-package com.vigourhub.backend;
+package com.vigourhub.backend.integrations.test_env;
 
 import java.util.List;
 
 public class TestEnvironment {
 
     private static final List<String> envs = List.of(
-            "POSTGRES_DATABASE=vigourhub-test",
+            "POSTGRES_DATABASE=vigourhub",
             "POSTGRES_HOST=localhost:5432",
             "POSTGRES_PASSWORD=vhadminpassword",
             "POSTGRES_USER=vhadmin",
@@ -14,8 +14,7 @@ public class TestEnvironment {
             "KEYCLOAK_SERVICE_ACCOUNT=backend-api-service-account",
             "KEYCLOAK_SERVICE_ACCOUNT_SECRET=yfbh4KcNKgJMcfh7pZrFchYbunNGf0MN",
             "RBMQ_USER=rbmquser",
-            "RBMQ_PASSWORD=rbmqpass",
-            "SECURITY_PRIVATE_KEY=12"
+            "RBMQ_PASSWORD=rbmqpass"
     );
 
     public static void setupEnv() {

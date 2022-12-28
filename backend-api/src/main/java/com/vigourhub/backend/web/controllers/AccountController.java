@@ -24,6 +24,4 @@ public class AccountController {
     public ResponseEntity<AccountResponseDTO> createAccount(@Valid @RequestBody AccountRequestDTO request) throws Exception {
         return ResponseEntity.ok(accountService.createAccount(request));
     }
-
-
 }

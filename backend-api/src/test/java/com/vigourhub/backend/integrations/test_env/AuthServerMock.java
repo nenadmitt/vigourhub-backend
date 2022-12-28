@@ -1,4 +1,4 @@
-package com.vigourhub.backend;
+package com.vigourhub.backend.integrations.test_env;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -16,7 +16,7 @@ import java.util.Date;
 @Component
 public class AuthServerMock {
 
-    public static void generateSigningKeys(){
+    public static void setup(){
         try {
             KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
             generator.initialize(2048);

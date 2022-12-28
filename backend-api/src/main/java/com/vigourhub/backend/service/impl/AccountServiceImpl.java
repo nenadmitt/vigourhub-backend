@@ -29,12 +29,10 @@ public class AccountServiceImpl implements AccountService {
 
     private final String ROLE_INSTRUCTOR = "Instructor";
     private final String ROLE_CLIENT = "Client";
-
     private final UserMapper mapper;
     private final AccountRepositoryAdapter accountAdapter;
     private KeycloakContext keycloakContext;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
-
     private final NotificationService notificationService;
 
     @Autowired
@@ -55,7 +53,6 @@ public class AccountServiceImpl implements AccountService {
         account.setTrial(true);
         account.setTrialStarted(LocalDateTime.now());
         account.setCreatedAt(LocalDateTime.now());
-
 
         accountAdapter.insert(account);
 

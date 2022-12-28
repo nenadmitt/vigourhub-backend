@@ -1,6 +1,7 @@
 package com.vigourhub.backend.domain.entity.workout_plans;
 
 import com.vigourhub.backend.domain.entity.AuditEntity;
+import com.vigourhub.backend.domain.entity.BaseEntity;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,7 +11,7 @@ import java.util.List;
 @Entity(name="workout_routines")
 @Getter
 @Setter
-public class WorkoutRoutine extends AuditEntity {
+public class WorkoutRoutine extends BaseEntity {
 
     private String name;
 

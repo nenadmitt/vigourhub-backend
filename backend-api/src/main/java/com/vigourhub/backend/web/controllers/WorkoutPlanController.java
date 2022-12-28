@@ -1,6 +1,7 @@
 package com.vigourhub.backend.web.controllers;
 
 import com.vigourhub.backend.dto.IdResponseDto;
+import com.vigourhub.backend.dto.workout_plans.RoutineRequestDTO;
 import com.vigourhub.backend.dto.workout_plans.RoutineWorkoutRequestDTO;
 import com.vigourhub.backend.dto.workout_plans.WorkoutPlanResponseDTO;
 import com.vigourhub.backend.dto.workout_plans.WorkoutPlanRequestDTO;
@@ -33,12 +34,12 @@ public class WorkoutPlanController {
     }
 
     @PostMapping("/{workoutPlanId}/routines")
-    public ResponseEntity<IdResponseDto> addRoutine(@PathVariable UUID workoutPlanId, @RequestParam(name="name") @NotBlank String name) throws Exception {
-        return ResponseEntity.ok(this.workoutPlanService.createWorkoutRoutine(workoutPlanId, name));
+    public ResponseEntity<IdResponseDto> addRoutine(@PathVariable UUID workoutPlanId, @RequestBody @Valid RoutineRequestDTO requestDTO) throws Exception {
+        return ResponseEntity.ok(this.workoutPlanService.createWorkoutRoutine(workoutPlanId, requestDTO));
     }
 
     @PostMapping("/{workoutPlanId}/routines/{routineId}/workouts")
-    @PreAuthorize("hasRole('ROLE_INSTRUCTOR')")
+    @PreAuthorize("hasRole('ROLE_Instructor')")
     public ResponseEntity<IdResponseDto> addWorkout(@PathVariable UUID workoutPlanId, @PathVariable UUID routineId,@Valid @RequestBody RoutineWorkoutRequestDTO requestDTO) throws Exception {
         return ResponseEntity.ok(this.workoutPlanService.addRoutineWorkout(workoutPlanId, routineId , requestDTO));
     }

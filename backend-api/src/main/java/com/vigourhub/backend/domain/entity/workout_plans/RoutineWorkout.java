@@ -2,6 +2,7 @@ package com.vigourhub.backend.domain.entity.workout_plans;
 
 import com.vigourhub.backend.domain.converters.WorkingSetConverter;
 import com.vigourhub.backend.domain.entity.AuditEntity;
+import com.vigourhub.backend.domain.entity.BaseEntity;
 import com.vigourhub.backend.domain.entity.enums.WorkoutExecutionType;
 import com.vigourhub.backend.domain.entity.workouts.Workout;
 import lombok.Getter;
@@ -13,7 +14,7 @@ import java.util.List;
 @Entity(name = "routine_workouts")
 @Getter
 @Setter
-public class RoutineWorkout extends AuditEntity {
+public class RoutineWorkout extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "routine_id")
@@ -28,6 +29,6 @@ public class RoutineWorkout extends AuditEntity {
     private WorkoutExecutionType workoutExecutionType;
 
     @Convert(converter = WorkingSetConverter.class)
-    @Column(columnDefinition = "jsonb")
+    @Column(columnDefinition = "jsonb", name="workings_sets")
     private List<WorkingSet> workingSets;
 }

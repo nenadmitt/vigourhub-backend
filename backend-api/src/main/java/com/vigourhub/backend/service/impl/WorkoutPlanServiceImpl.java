@@ -5,6 +5,7 @@ import com.vigourhub.backend.domain.entity.account.Account;
 import com.vigourhub.backend.domain.entity.account.User;
 import com.vigourhub.backend.domain.entity.workout_plans.*;
 import com.vigourhub.backend.dto.IdResponseDto;
+import com.vigourhub.backend.dto.workout_plans.RoutineRequestDTO;
 import com.vigourhub.backend.dto.workout_plans.RoutineWorkoutRequestDTO;
 import com.vigourhub.backend.dto.workout_plans.WorkoutPlanResponseDTO;
 import com.vigourhub.backend.dto.workout_plans.WorkoutPlanRequestDTO;
@@ -57,7 +58,7 @@ public class WorkoutPlanServiceImpl implements WorkoutPlanService {
     }
 
     @Override
-    public IdResponseDto createWorkoutRoutine(UUID workoutPlanId, String name) throws Exception {
+    public IdResponseDto createWorkoutRoutine(UUID workoutPlanId, RoutineRequestDTO requestDTO) throws Exception {
 
         var optionalPlan = this.getPlan(workoutPlanId);
 
@@ -73,7 +74,7 @@ public class WorkoutPlanServiceImpl implements WorkoutPlanService {
         }
 
         WorkoutRoutine routine = new WorkoutRoutine();
-        routine.setName(name);
+        routine.setName(requestDTO.getName());
         routine.setWorkoutPlan(plan);
         routine.setId(UUID.randomUUID());
 
@@ -115,7 +116,6 @@ public class WorkoutPlanServiceImpl implements WorkoutPlanService {
             throw new NotFoundException("Workout not found");
         }
 
-        WorkoutMetadata metadata = new WorkoutMetadata();
         var workingSetsDTO = requestDTO.getWorkingSets();
         List<WorkingSet> sets = new ArrayList<>(workingSetsDTO.size());
 
